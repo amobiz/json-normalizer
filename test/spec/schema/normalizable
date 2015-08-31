@@ -1,0 +1,49 @@
+{
+    "id": "https://github.com/amobiz/json-normalizer/schema/normalizable#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "normalizable": {
+            "properties": {
+                "alias": {
+                    "description": "alias of the property",
+                    "type": [
+                        "string",
+                        "array"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "extends": {
+                    "description": "schemas to extend",
+                    "type": [
+                        { "$ref": "#" },
+                        "array"
+                    ],
+                    "items": { "$ref" : "#" },
+                    "default": {}
+                },
+                "samples": {
+                    "description": "give a sample"
+                },
+                "primary": {
+                    "description": "",
+                    "type": "string"
+                },
+                "others": {
+                    "description": "",
+                    "type": "string",
+                    "default": "others"
+                }
+            }
+        }
+    },
+    "allOf":[
+        {
+            "$ref": "http://json-schema.org/draft-04/schema#"
+        },
+        {
+            "$ref": "#/definitions/normalizable"
+        }
+    ]
+}

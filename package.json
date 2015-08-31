@@ -1,0 +1,32 @@
+{
+  "name": "json-normalizer",
+  "version": "0.1.0",
+  "description": "Normalize a json object to meets a json-schema using extended schema descriptor.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/spec/**/*_test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amobiz/json-normalizer.git"
+  },
+  "keywords": [
+    "normalize",
+    "normalizer",
+    "json",
+    "json-schema",
+    "schema"
+  ],
+  "author": "Amobiz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/amobiz/json-normalizer/issues"
+  },
+  "homepage": "https://github.com/amobiz/json-normalizer",
+  "devDependencies": {
+    "mocha": "^2.2.5"
+  },
+  "dependencies": {
+    "lodash": "^3.10.1"
+  }
+}
