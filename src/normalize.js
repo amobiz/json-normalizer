@@ -15,31 +15,60 @@
 'use strict';
 
 var _ = require('lodash');
+var reduce = require('./lib/util').reduce;
 var deref = require('./deref');
 
 function normalize(schema, values, options, callback) {
-    var error, details = [];
-    
     if (typeof options === 'function') {
         callback = options;
-        options = {};
+        options = null;
     }
-    process.nextTick(_process);
+    process.nextTick(_async);
     
-    function _process() {
-        deref(schema, options, function(err, schema) {
+    function _async() {
+        deref(schema, options || {}, function(err, schema) {
+            var errors;
+            
             if (err) {
-                error = err;
-                details = schema;
+                callback(err);
             }
             else {
-                var resolved = _instance(schema, values);
-                if (resolved) {
-                    details = resolved();
+                errors = [];
+                schema = _process(schema, values, errors);
+                if (errors.length > 0) {
+                    callback(errors);
+                }
+                else {
+                    callback(null, schema); 
                 }
             }
-            callback(error, details); 
         });
+    }
+}
+    
+function sync(schema, values, options) {
+    var errors;
+    
+    errors = [];
+    schema = deref.sync(schema, options || {});
+    schema = _process(schema, values, errors);
+    if (errors.length > 0) {
+        throw errors;
+    }
+    return schema;
+}
+
+function _process(schema, values, errors) {
+    var resolved = _instance(schema, values);
+    if (resolved) {
+        return resolved();
+    }
+    
+    function _instance(schema, values) {
+        schema = _extends(schema);
+        return _validate(schema,
+            _object(schema, values) || _primary(schema, values) || _primitive(schema, values)
+        );
     }
     
     function _extends(schema) {
@@ -50,13 +79,6 @@ function normalize(schema, values, options, callback) {
             schema = _.omit(schema, ['extends']);              
         }
         return schema;
-    }
-    
-    function _instance(schema, values) {
-        schema = _extends(schema);
-        return _validate(schema,
-            _object(schema, values) || _primary(schema, values) || _primitive(schema, values)
-        );
     }
     
     function _object(schema, values) {
@@ -148,20 +170,20 @@ function normalize(schema, values, options, callback) {
         }
     }
                 
-    function _array(schema, value) {
+    function _array(schema, values) {
         // note: if schema.type is 'array, we force value to be an array.
-        if (schema.type === 'array' || (Array.isArray(value) && (!schema.type || _.contains(schema.type, 'array')))) {
-            return _filter(resolve(reduce(value, _item, [])));
+        if (schema.type === 'array' || (Array.isArray(values) && (!schema.type || _.contains(schema.type, 'array')))) {
+            return _filter(resolve(reduce(values, _item, [])));
         }
         
         function _item(ret, values) {
-            _accumulate(_filter(_instance(schema, values)));
-            return ret;
+            return _accumulate(_filter(_instance(schema, values)));
         
             function _accumulate(resolved) {
                 if (resolved) {
                     ret.push(resolved());
                 }
+                return ret;
             }
         }
     }
@@ -188,12 +210,11 @@ function normalize(schema, values, options, callback) {
             }
         }
     }
-
+    
     function _error(type, schema, property) {
-        error = true;
         switch (type) {
             case 'missing':
-                details.push({
+                errors.push({
                     error: 'required property missing',
                     message: 'property "' + property + '" is required but missing',
                     schema: schema
@@ -203,16 +224,6 @@ function normalize(schema, values, options, callback) {
     } 
 }
 
-function reduce(collection, iteratee, accumulator) {
-    if (!collection) {
-        return accumulator;
-    }
-    if (Array.isArray(collection)) {
-        return collection.reduce(iteratee, accumulator);
-    }
-    return iteratee(accumulator, collection);
-}
-    
 function resolve(value) {
     return function() {
         return value;
@@ -225,3 +236,4 @@ function set(target, property, value) {
 }
 
 module.exports = normalize;
+module.exports.sync = sync;

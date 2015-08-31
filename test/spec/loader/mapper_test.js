@@ -30,7 +30,7 @@ function shouldOverride(mapper, orignal, override) {
 
 function callAdd(mapper, mappings) {
     Object.keys(mappings).forEach(function($ref) {
-        mapper.add($ref, mappings[$ref]);
+        mapper.map($ref, mappings[$ref]);
     })
 }
 
@@ -77,7 +77,7 @@ describe('mapper()', function() {
         });
     });
     
-    describe('add() and map()', function() {
+    describe('map()', function() {
         it('should returns falsy and do not call callback when mapping not found', function() {
             return new Promise(function(resolve) {
                 var callCount = 0;
@@ -99,7 +99,7 @@ describe('mapper()', function() {
             return shouldMatch(mapper, mappings);
         });
         
-        it('subsequent add() and map() calls overrides previous add() and map() calls', function() {
+        it('subsequent map() calls overrides previous map() calls', function() {
             var i, n, mapper, promise;
             
             var cases = [{

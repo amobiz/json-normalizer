@@ -26,7 +26,8 @@ The normalizer is based on json-schema with the "[normalizable](http://github.co
 5. Allow schema extends other schemas, using the "`extends`" keyword.
 
 ## Install
-`npm install --save json-normalizer`
+
+$ `npm install --save json-normalizer`
 
 ## API
 
@@ -72,6 +73,39 @@ normalize(schema, data, options, function(err, result) {
     }
 });
 ```
+
+### `normalize.sync(schema, data [, options])`
+Same as the async version but returns normalized schema. Throws when error;
+Note that loaders must also be sync version.
+#### Returns
+The normalized schema.
+#### Example
+```
+var normalize = require('json-normalizer');
+var schema = {
+	"properties": {
+		"entries": {
+			"alias": "entry",
+			"type": "array"
+		}
+	}
+};
+var data = {
+	"entry": "index.js"
+};
+// optional, only needed if your schema references remote schema.
+var mapper = ...; // see example bellow
+var options = {
+    loaders: [mapper]
+};
+try {
+    var normalized = normalize(schema, data, options);
+    // process the normalized JSON data object here.
+} catch (err) {
+    // handle error here.
+}
+```
+
 ## Other functions that may be handy:
 
 ### `deref(schema, [options,] callback)`
@@ -90,6 +124,10 @@ The callback function with `function(err, detail)` signature that the `deref` fu
 #### Returns
 No return value.
 
+### `deref.sync(schema [, options])`
+Same as the async version but returns dereferenced schema. Throws when error;
+Note that loaders must also be sync version.
+
 ### `maperFactory([definitions]): function`
 Creates a mapper schema loader, i.e. a schema loader that holds schema definitions in memory, initialized with the optional `definitions` hash object.
 #### Context
@@ -99,7 +137,11 @@ Don't care.
 Optional. If provided, all definitions in the `definitions` hash object will be available for mapping. See `mapper#map(definitions)` for more details.
 #### Returns
 The mapper schema loader.
-### `mapper#add($ref, schema)`
+### `mapper(root, $ref, callback)`
+The async version of mapper.
+### `mapper#sync(root, $ref)`
+The sync version of mapper.
+### `mapper#map($ref, schema)`
 Add a `schema` with the `$ref` JSON pointer. Subsequent calls with the same JSON pointer will override definition of preceding calls.
 #### Context
 Don't care.
@@ -137,15 +179,33 @@ var schema = {
 		"userProfile": { "$ref": "http://json-schema.org/card" }
 	}     
 };
+
+// Async Version
 deref(schema, { loader: mapper }, function(err, schema) {
-    // use the dereferenced schema.
+	if (err) {
+	    // handle error here.
+	}
+	else {
+	    // use the dereferenced schema.
+    }
 });
+
+// Sync Version
+try {
+	var deferenced = deref.sync(schema, { loader: mapper.sync });
+    // use the dereferenced schema.
+}
+catch (err) {
+    // handle error here.
+}
 ```
+
 ### Write Your Own Loader
- *  Loaders are functions with `function(rootSchema, $ref, callback(err, schema))` signature,
- *  Loaders must return truthy if it can handle the given reference `$ref`, and the callback be called later when the schema is ready. However, if error occurred, e.g., network failure, the callback be called with the `err` set to the type of error and the second argument provides details of that error.
- *  Loaders must return falsy if it can not handle the given reference `$ref`, and the `callback` should not be called at all.
- *  A local loader is always tested first, and other loaders provided in `options.loader` or `options.loaders` argument are then tested by the order listed.
+*  Async loaders are functions with `function(rootSchema, $ref, callback(err, schema))` signature.
+*  Async loaders must return truthy if it can handle the given reference `$ref`, and the callback be called later when the schema is ready. However, if error occurred, e.g., network failure, the callback be called with the `err` set to the type of error and the second argument provides details of that error.
+*  Async loaders must return falsy if it can not handle the given reference `$ref`, and the `callback` should not be called at all.
+*  Sync loaders are functions with `function(rootSchema, $ref)` signature.
+*  A local loader is always tested first, and other loaders provided in `options.loader` or `options.loaders` argument are then tested by the order listed.
 
 ## Usage Examples
 
@@ -280,9 +340,15 @@ Please refer to test for more examples.
 
 ## Test
 Tests are written in mocha. Run tests in terminal:
-```
-npm test
-```
+
+$ `npm test`
+
+
+## Change Logs
+
+### 0.1.1
+* Add sync version.
+* Remove mapper#add() method, use mapper#map() instead.
 
 ## License
 MIT

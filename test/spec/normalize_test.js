@@ -45,7 +45,12 @@ describe('normalize()', function() {
             name: 'self-certification extended json-schema: normalizable',
             schema: normalizable,
             value: normalizable,
-            expected: normalizable
+            expected: normalizable,
+            options: {
+                loader: require('../../src/loader/mapper')({
+                    'http://json-schema.org/draft-04/schema#': schema
+                })
+            }
         }];
         
         test(null, cases);
@@ -516,19 +521,44 @@ function test(schema, cases) {
     }
     
     tests.forEach(function(test, index) {
-        it('should ' + (test.name || 'pass test case ' + index), function() {
+        it('async: should ' + (test.name || 'pass test case ' + index), function() {
             return new Promise(function(resolve, reject) {
-                normalize(schema || test.schema, test.value, function(err, actual) {
+                if (test.debug) {
+                    debugger;
+                }
+                normalize(schema || test.schema, test.value, test.options || {}, function(err, actual) {
                     if (test.expected) {
                         assert.deepEqual(actual, test.expected);
                     }
                     else if (test.error) {
                         assert(err);
-                        assert.deepEqual(actual, test.error);
+                        assert.deepEqual(err, test.error);
                     }
                     resolve();
                 });
             });
+        });
+
+        it('sync: should ' + (test.name || 'pass test case ' + index), function() {
+            var options;
+            
+            if (test.debug) {
+                debugger;
+            }
+            if (test.options) {
+                options = {
+                    loader: test.options.loader.sync
+                };
+            }
+            try {
+                var actual = normalize.sync(schema || test.schema, test.value, options || {});
+                if (test.expected) {
+                    assert.deepEqual(actual, test.expected);
+                }
+            }
+            catch (ex) {
+                assert.deepEqual(ex, test.error);
+            }
         });
     });
     
