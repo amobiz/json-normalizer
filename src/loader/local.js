@@ -1,3 +1,6 @@
+/*global process */
+'use strict';
+
 module.exports = function(root, $ref, callback) {
     var ref;
     
@@ -9,7 +12,9 @@ module.exports = function(root, $ref, callback) {
             ref = $ref.substr($ref.lastIndexOf('/') + 1);
             ref = root.definitions && root.definitions[ref];
         }
-        callback(null, ref);
+        process.nextTick(function() {
+            callback(null, ref);
+        });
         return true;
     }
 }

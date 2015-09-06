@@ -1,3 +1,4 @@
+/*global process */
 'use strict';
 
 var _ = require('lodash');
@@ -15,7 +16,7 @@ function iterate(collection, iterator, done) {
         _visit(0);
     }
     else {
-        done();
+        _done();
     }
 
     function _visit(i) {
@@ -24,16 +25,20 @@ function iterate(collection, iterator, done) {
         if (i < n) {
             key = keys ? keys[i] : i;
             if (iterator(collection[key], key, collection, _next) === false) {
-                done();
+                _done();
             }
         }
         else {
-            done();
+            _done();
         }
         
         function _next() {
             _visit(i+1);
         }
+    }
+    
+    function _done() {
+        process.nextTick(done);
     }
 }
 

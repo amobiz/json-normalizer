@@ -4,7 +4,7 @@
   "description": "Normalize a json object to meets a json-schema using extended schema descriptor.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/spec/**/*_test.js"
+    "test": "mocha --recursive test/spec"
   },
   "repository": {
     "type": "git",
