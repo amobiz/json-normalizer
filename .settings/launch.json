@@ -13,11 +13,15 @@
 			// Automatically stop program after launch.
 			"stopOnEntry": true,
 			// Command line arguments passed to the program.
+<<<<<<< 7c85867b58ae26c8e06008d9ec5638ce014d0580
 <<<<<<< 0638b8aa1a1cb4ef1f4addcba2134b379c0eb5e4
 			"args": ["--recursive", "test/spec"],
 =======
 			"args": ["test/spec/**/*_test.js"],
 >>>>>>> confirm json-schema terminology and json-reference standard
+=======
+			"args": ["--recursive", "test/spec"],
+>>>>>>> finish mapper and it's test.
 			// Workspace relative or absolute path to the working directory of the program being debugged. Default is the current workspace.
 			"cwd": ".",
 			// Workspace relative or absolute path to the runtime executable to be used. Default is the runtime executable on the PATH.
