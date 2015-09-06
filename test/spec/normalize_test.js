@@ -89,7 +89,7 @@ describe('normalize()', function() {
                 },
                 "required": ["globs"],
                 "primary": "globs",
-                "others": "options"
+                "gathering": "options"
             };
             
             var cases = [{
@@ -208,7 +208,7 @@ describe('normalize()', function() {
                 },
                 "required": ["path"],
                 "primary": "path",
-                "others": "options"
+                "gathering": "options"
             };
             
             var cases = [{
@@ -523,6 +523,7 @@ function test(schema, cases) {
                         assert.deepEqual(actual, test.expected);
                     }
                     else if (test.error) {
+                        assert(err);
                         assert.deepEqual(actual, test.error);
                     }
                     resolve();

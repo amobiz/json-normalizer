@@ -30,7 +30,7 @@
                     "description": "",
                     "type": "string"
                 },
-                "others": {
+                "gathering": {
                     "description": "",
                     "type": "string",
                     "default": "others"

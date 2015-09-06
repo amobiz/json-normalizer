@@ -1,56 +1,46 @@
+/*global process*/
 /**
- * The schema is based on json-schema with some teaks and extensions:
+ * Normalizes a loose json data object to a strict json-schema data object.
  * 
- * Teaks:
- * 1.Required metadata is defined within property not its parent. 
- * 2.Types are ignored.
- * 
- * Extensions:
- * 1.Property alias are allowed and being normalized.
- * 2.Properties can have sample values.
- * 3.A primary property can be specified that provided value can be assigned to when it is not an object.
- * 4.Unrecognized properties can be gathered to a specified property, defaults to 'others'.
- * 5.Converts a single value to an array for property of array type.
- * 6.Allow schema extends other schemas. 
- * 
- * references:
- *   json-schema.org
- *   http://json-schema.org/
- * 
- *   http://jsonschema.net/
+ * @context Don't care.
+ * @param schema The schema used to normalize the given JSON data object.
+ * @param data The JSON data object.
+ * @param options Optional. Currently only accepts loader or array of loaders.
+ * @param options.loader | options.loaders A loader or an array of loaders 
+ *      that help loading remote schemas. Loaders are tested in the order listed.
+ * @param callback The callback function with `function(err, detail)` signature 
+ *      that the normalizer delivers the normalized JSON object to. Called with null context.
+ * @return No return value.
  */
 'use strict';
 
 var _ = require('lodash');
-
 var deref = require('./deref');
 
-/**
- * Register a json reference loader.
- * 
- * @param loader: function
- *   Loader must be a function that returns true if it can handle the given reference, false otherwise.
- *   Loader takes root schema, $ref and callback(err, schema) as parameters.
- *   Loaders are called by the order they being registered. 
- * 
- */
-
-function normalize(schema, values, callback) {
+function normalize(schema, values, options, callback) {
     var error, details = [];
     
-    deref(schema, function(err, schema) {
-        if (err) {
-            error = err;
-            details = schema;
-        }
-        else {
-            var resolved = _instance(schema, values);
-            if (resolved) {
-                details = resolved();
+    if (typeof options === 'function') {
+        callback = options;
+        options = {};
+    }
+    process.nextTick(_process);
+    
+    function _process() {
+        deref(schema, options, function(err, schema) {
+            if (err) {
+                error = err;
+                details = schema;
             }
-        }
-        callback(error, details); 
-    });
+            else {
+                var resolved = _instance(schema, values);
+                if (resolved) {
+                    details = resolved();
+                }
+            }
+            callback(error, details); 
+        });
+    }
     
     function _extends(schema) {
         var schemas;
@@ -76,7 +66,7 @@ function normalize(schema, values, callback) {
             omits = [];
             ret = {}
             _properties();
-            _others();
+            _gathering();
             return _filter(resolve(ret));
         }
             
@@ -124,22 +114,22 @@ function normalize(schema, values, callback) {
             }
         }
         
-        function _others() {
-            var name, others;
+        function _gathering() {
+            var name, gathering;
             
-            others = _.omit(values, omits)
+            gathering = _.omit(values, omits)
 
-            if (_.size(others)) {
+            if (_.size(gathering)) {
                 if (schema.additionalProperties) {
-                    _.defaults(ret, others);
+                    _.defaults(ret, gathering);
                 }
                 else {
-                    name = schema.others || 'others';
+                    name = schema.gathering || 'others';
                     if (ret[name]) {
-                        _.defaults(ret[name], others);
+                        _.defaults(ret[name], gathering);
                     }
                     else {
-                        ret[name] = others;
+                        ret[name] = gathering;
                     }
                 }
             }
@@ -233,7 +223,5 @@ function set(target, property, value) {
     target[property] = value;
     return target;
 }
-
-normalize.registerLoader = deref.registerLoader;
 
 module.exports = normalize;
