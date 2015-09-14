@@ -16,9 +16,8 @@ function iterate(collection, iterator, done) {
         _visit(0);
     }
     else {
-        done();
+        _done();
     }
-    return collection;
 
     function _visit(i) {
         var key;
@@ -26,25 +25,29 @@ function iterate(collection, iterator, done) {
         if (i < n) {
             key = keys ? keys[i] : i;
             if (iterator(collection[key], key, collection, _next) === false) {
-                done();
+                _done();
             }
         }
         else {
-            done();
+            _done();
         }
         
         function _next() {
             _visit(i+1);
         }
     }
+    
+    function _done() {
+        process.nextTick(done);
+    }
 }
 
 function traverse(collection, iterator, done) {
-    return iterate(collection, _visit, done);
+    iterate(collection, _visit, done);
     
     function _visit(val, key, collection, next) {
         if (iterator(val, key, collection, _next) === false) {
-            return false;
+            next();
         }
     
         function _next() {
