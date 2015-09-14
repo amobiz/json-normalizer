@@ -7,15 +7,64 @@ function factory(definitions) {
     if (definitions) {
         map(definitions);
     }
-    mapper.add = add;
+    mapper.sync = sync;
     mapper.map = map;
     return mapper;
 
     function mapper(root, $ref, callback) {
-        var parts, uri, schema, i, n, err;
+        var ref = _lookup($ref)
+        if (ref.schema) {
+            process.nextTick(_process);
+            return true;
+        }
         
+        function _process() {
+            var schema = _locate(ref.schema, ref.paths);
+            if (schema) {
+                callback(null, schema);
+            }
+            else {
+                callback({
+                    'message': 'reference not found in the specified $schema', 
+                    '$ref': $ref
+                });
+            }
+        }
+    }
+    
+    function sync(root, $ref) {
+        var ref = _lookup($ref)
+        if (ref.schema) {
+            return _locate(ref.schema, ref.paths);
+        }
+    }
+    
+    function map($ref, schema) {
+        var definitions;
+        
+        if (typeof $ref === 'string' && schema) {
+            _add($ref, schema);
+        }
+        else {
+            definitions = $ref;
+            Object.keys(definitions).forEach(function($ref) {
+                _add($ref, definitions[$ref]);
+            });
+        }
+    
+        function _add($ref, schema) {
+            _definitions[$ref] = schema;
+        }
+    }
+    
+    function _lookup($ref) {
+        var parts, ref, uri;
+        
+        ref = {};
         if (_definitions[$ref]) {
-            schema = _definitions[$ref]; 
+            ref.uri = $ref; 
+            ref.paths = [];
+            ref.schema = _definitions[$ref];
         }
         else {
             // NOTE: this regex make sure supporting of:
@@ -25,38 +74,23 @@ function factory(definitions) {
             parts = $ref.split(/#\//);
             // local reference shouldn't be mapped.
             uri = parts[0]; 
-            if (parts.length !== 2 || uri.length === 0) {
-                return false;
-            }
-            schema = _definitions[uri+'#'];
+            ref.uri = uri + '#';
+            ref.paths = parts[1] ? parts[1].split(/\//) : []; 
+            ref.schema = _definitions[ref.uri];
+        }
+        return ref;            
+    }
+    
+    function _locate(schema, paths) {
+        var i, n;
+        
+        for (i = 0, n = paths.length; i < n; ++i) {
+            schema = schema[paths[i]];
             if (!schema) {
-                return false;
-            }
-            
-            parts = parts[1].split(/\//);
-            for (i = 0, n = parts.length; i < n; ++i) {
-                schema = schema[parts[i]];
-                if (!schema) {
-                    err = 'reference not found in the specified $schema';
-                    schema = $ref;
-                    break;
-                }
+                return;
             }
         }
-        process.nextTick(function() {
-            callback(err, schema);
-        });
-        return true;
-    }
-    
-    function map(mappings) {
-        Object.keys(mappings).forEach(function($ref) {
-            add($ref, mappings[$ref]);
-        });
-    }
-    
-    function add($ref, schema) {
-        _definitions[$ref] = schema;
+        return schema;
     }
 }
 

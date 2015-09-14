@@ -26,7 +26,8 @@ The normalizer is based on json-schema with the "[normalizable](http://github.co
 5. Allow schema extends other schemas, using the "`extends`" keyword.
 
 ## Install
-`npm install --save json-normalizer`
+
+$ `npm install --save json-normalizer`
 
 ## API
 
@@ -142,7 +143,7 @@ deref(schema, { loader: mapper }, function(err, schema) {
 });
 ```
 ### Write Your Own Loader
- *  Loaders are functions with `function(rootSchema, $ref, callback(err, schema))` signature,
+ *  Loaders are functions with `function(rootSchema, $ref, callback(err, schema))` signature.
  *  Loaders must return truthy if it can handle the given reference `$ref`, and the callback be called later when the schema is ready. However, if error occurred, e.g., network failure, the callback be called with the `err` set to the type of error and the second argument provides details of that error.
  *  Loaders must return falsy if it can not handle the given reference `$ref`, and the `callback` should not be called at all.
  *  A local loader is always tested first, and other loaders provided in `options.loader` or `options.loaders` argument are then tested by the order listed.
@@ -280,9 +281,9 @@ Please refer to test for more examples.
 
 ## Test
 Tests are written in mocha. Run tests in terminal:
-```
-npm test
-```
+
+$ `npm test`
+
 
 ## License
 MIT

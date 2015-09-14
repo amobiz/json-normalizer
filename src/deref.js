@@ -25,63 +25,110 @@ var traverse = require('./lib/util').traverse;
  * 
  */
 function deref(schema, options, callback) {
+    var root, loaders, error;
+    
     if (typeof options === 'function') {
         callback = options;
         options = {};
     }
-    process.nextTick(_process);
     
-    function _process() {
-        var loaders = [require('./loader/local')];
-        if (options.loader || options.loaders) {
-            loaders = loaders.concat(options.loader || options.loaders);
+    root = _.cloneDeep(schema);
+    loaders = _loaders(require('./loader/local'), options);
+    process.nextTick(function() {
+        traverse(root, _visit, _done);
+    });
+    
+    function _visit(node, key, owner, next) {
+        if (node === root) {
+            next();
         }
-        
-        schema = _.cloneDeep(schema);
-        traverse(schema, _visit, _done);
-    
-        function _visit(node, key, owner, next) {
-            if (node === schema) {
-                return false;
-            }
-            
-            if (typeof node.$ref === 'string') {
-                _load(node.$ref, function(err, schema) {
-                    if (!err && schema) {
-                        owner[key] = schema;
-                    }
-                    next();
-                });
-            }
-            else {
+        if (typeof node.$ref === 'string') {
+            _load(node.$ref, function(err, schema) {
+                if (err) {
+                    error = err;
+                    return false;
+                }
+                owner[key] = schema;
                 next();
-            }
+            });
+        }
+        else {
+            next();
         }
         
         function _load($ref, resolve) {
-            _evaluate(loaders, _try) || resolve('no appropriate loader to handle the $ref: ' + $ref);
+            _evaluate(loaders, _try) || resolve({
+                message: 'no appropriate loader',
+                $ref: $ref
+                });
             
             function _try(loader) {
-                return loader(schema, $ref, resolve);
+                return loader(root, $ref, resolve);
             }
         }
+    }
     
-        function _done() {
-            process.nextTick(function() {
-                callback(null, schema);
-            });
+    function _done() {
+        process.nextTick(function() {
+            if (error) {
+                callback(error);
+            }
+            else {
+                callback(null, root);
+            }
+        });
+    }
+}
+
+function sync(schema, options) {
+    var root = _.cloneDeep(schema);
+    var loaders = _loaders(require('./loader/local').sync, options || {});
+    return traverse(root, _visit, _done);
+    
+    function _visit(node, key, owner, next) {
+        var schema;
+        
+        if (node === root) {
+            return false;
+        }
+        if (typeof node.$ref === 'string') {
+            schema = _load(node.$ref);
+            if (schema) {
+                owner[key] = schema;
+            }
+        }
+        next();
+    
+        function _load($ref) {
+            return _evaluate(loaders, _try);
+            
+            function _try(loader) {
+                return loader(root, $ref);
+            }
         }
     }
 
-    function _evaluate(collection, iterator) {
-        var i, n;
-        
-        for (i = 0, n = collection.length; i < n; ++i) {
-            if (iterator(collection[i])) {
-                return true;
-            }
+    function _done() {
+    }
+}
+
+function _loaders(local, options) {
+    var loaders = [local];
+    if (options.loader || options.loaders) {
+        loaders = loaders.concat(options.loader || options.loaders);
+    }
+    return loaders;
+}
+
+function _evaluate(collection, iterator) {
+    var i, n, v;
+    
+    for (i = 0, n = collection.length; i < n; ++i) {
+        if (v = iterator(collection[i])) {
+            return v;
         }
     }
 }
 
 module.exports = deref;
+module.exports.sync = sync;
