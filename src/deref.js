@@ -2,7 +2,7 @@
 'use strict';
 
 var _ = require('lodash');
-var traverse = require('./lib/async').traverse;
+var traverse = require('./lib/util').traverse;
 
 /**
  * Dereference a schema that using JSON references.

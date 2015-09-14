@@ -2,15 +2,15 @@
 'use strict';
 
 var assert = require('assert');
-var async = require('../../src/lib/async');
+var util = require('../../src/lib/util');
 
-var iterate = async.iterate;
-var traverse = async.traverse;
+var iterate = util.iterate;
+var traverse = util.traverse;
 
-describe('async()', function() {
+describe('util()', function() {
 
     describe('iterate()', function() {
-        var v = {
+        var nodes = {
             schema: {
                 definitions: {
                     ext: {
@@ -28,14 +28,13 @@ describe('async()', function() {
             }
         };
         
-        var a = {};
-        
         it('should iterate in order', function(done) {
-            iterate(v, function(value, key, list, next) {
-                a[key] = value;
+            var actual = {};
+            iterate(nodes, function(value, key, list, next) {
+                actual[key] = value;
                 next();
             }, function() {
-                assert.deepEqual(a, v);
+                assert.deepEqual(actual, nodes);
                 done();
             });
         });
@@ -44,7 +43,7 @@ describe('async()', function() {
 
     describe('traverse()', function() {
     
-        var v = {
+        var nodes = {
             a: {
                 b: {
                     c: {},
@@ -62,17 +61,15 @@ describe('async()', function() {
                 k: 4
             }
         };
-        
-        var e = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 0, 'h', 'i', 1, 'j', 0, 1, 2, 'k' ];
-        
-        var a = [];
+        var order = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 0, 'h', 'i', 1, 'j', 0, 1, 2, 'k' ];
         
         it('should traverse deep first', function(done) {
-            traverse(v, function(value, key, list, next) {
-                a.push(key);
+            var actual = [];
+            traverse(nodes, function(value, key, list, next) {
+                actual.push(key);
                 next();
             }, function() {
-                assert.deepEqual(a, e);
+                assert.deepEqual(actual, order);
                 done();
             });
         });

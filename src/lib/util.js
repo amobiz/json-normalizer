@@ -56,5 +56,16 @@ function traverse(collection, iterator, done) {
     }
 }
 
+function reduce(collection, iteratee, accumulator) {
+    if (!collection) {
+        return accumulator;
+    }
+    if (Array.isArray(collection)) {
+        return collection.reduce(iteratee, accumulator);
+    }
+    return iteratee(accumulator, collection);
+}
+    
 exports.iterate = iterate;
 exports.traverse = traverse;
+exports.reduce = reduce;

@@ -15,6 +15,7 @@
 'use strict';
 
 var _ = require('lodash');
+var reduce = require('./lib/util').reduce;
 var deref = require('./deref');
 
 function normalize(schema, values, options, callback) {
@@ -203,16 +204,6 @@ function normalize(schema, values, options, callback) {
     } 
 }
 
-function reduce(collection, iteratee, accumulator) {
-    if (!collection) {
-        return accumulator;
-    }
-    if (Array.isArray(collection)) {
-        return collection.reduce(iteratee, accumulator);
-    }
-    return iteratee(accumulator, collection);
-}
-    
 function resolve(value) {
     return function() {
         return value;
