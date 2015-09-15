@@ -1,7 +1,7 @@
 # json-normalizer 
 Normalize a json object to meets a json-schema using extended schema descriptor.
  
-[![MIT](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/amobiz/json-normalizer/blob/master/LICENSE") [![npm version](https://badge.fury.io/js/json-normalizer.svg)](http://badge.fury.io/js/json-normalizer) [![David Dependency Badge](https://david-dm.org/amobiz/json-normalizer.svg)](https://david-dm.org/amobiz/json-normalizer) 
+[![MIT](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/amobiz/json-normalizer/blob/master/LICENSE) [![npm version](https://badge.fury.io/js/json-normalizer.svg)](http://badge.fury.io/js/json-normalizer) [![David Dependency Badge](https://david-dm.org/amobiz/json-normalizer.svg)](https://david-dm.org/amobiz/json-normalizer) 
 
 [![NPM](https://nodei.co/npm/json-normalizer.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/json-normalizer.png?downloads=true&downloadRank=true&stars=true) [![NPM](https://nodei.co/npm-dl/json-normalizer.png?months=6&height=3)](https://nodei.co/npm/json-normalizer/)
 
@@ -40,7 +40,7 @@ You want:
 * Maximum reuse of schemas, i.e., you want multiple inheritance.
 
 ### The Solution
-The normalizer is based on json-schema with the "[normalizable](http://github.com/amobiz/json-normalizer/schema/normalizable#)" extension:
+The normalizer is based on json-schema with the "[normalizable](https://raw.githubusercontent.com/amobiz/json-normalizer/master/test/spec/schema/normalizable#)" extension:
 
 1. Properties can have alias and being normalized, using the "`alias`" keyword.
 2. For schemas of "`object`" type, a "`primary`" property can be specified, 
