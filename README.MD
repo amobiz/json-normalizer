@@ -350,7 +350,7 @@ to:
 					"alias": ["entry"],
 					"type": "array"
 				},
-				"options" {
+				"options": {
 					"$ref": "#/definitions/options"
 				}
 			}
