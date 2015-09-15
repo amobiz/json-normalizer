@@ -1,9 +1,33 @@
-# Json-normalizer
-Normalizes a loose JSON data object to a strict [json-schema](http://json-schema.org/) data object.
+# json-normalizer 
+Normalize a json object to meets a json-schema using extended schema descriptor.
  
-Note: Json-normalizer is not a json-schema validator. If you are looking for json-schema validators, 
-please check out here: https://www.npmjs.com/search?q=json-schema+validator
+[![MIT](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/amobiz/json-normalizer/blob/master/LICENSE") [![npm version](https://badge.fury.io/js/json-normalizer.svg)](http://badge.fury.io/js/json-normalizer) [![David Dependency Badge](https://david-dm.org/amobiz/json-normalizer.svg)](https://david-dm.org/amobiz/json-normalizer) 
+
+[![NPM](https://nodei.co/npm/json-normalizer.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/json-normalizer.png?downloads=true&downloadRank=true&stars=true) [![NPM](https://nodei.co/npm-dl/json-normalizer.png?months=6&height=3)](https://nodei.co/npm/json-normalizer/)
+
  
+Note: Json-normalizer is not a [json-schema](http://json-schema.org/) validator. If you are looking for json-schema validators, 
+please check out here: [json-schema validators](https://www.npmjs.com/search?q=json-schema+validator).
+
+
+#### Contents
+* [Overview](#overview)
+	* [The Problems](#the-problems)
+	* [The Solution](#the-solution)
+* [Install](#install)
+* [API](#api)
+* [Other functions that may be handy](#other-functions-that-may-be-handy)
+	* [Write your own loader](#write-your-own-loader)
+* [Usage Examples](usage-examples)
+	* [Alias and Array Type](#alias-and-array-type)
+	* [Primary Property and Gathering Property](#primary-property-and-gathering-property)
+	* [Extending Schema](#extending-schema)
+* [Build and Contribute](#build-and-contribute)
+* [Issues](#issues)
+* [Test](#test)
+* [Change Logs](#change-logs)
+* [License](#license)
+
 ## Overview
  
 ### The Problems
@@ -26,8 +50,9 @@ The normalizer is based on json-schema with the "[normalizable](http://github.co
 5. Allow schema extends other schemas, using the "`extends`" keyword.
 
 ## Install
-
-$ `npm install --save json-normalizer`
+``` bash
+$ npm install --save json-normalizer
+```
 
 ## API
 
@@ -49,7 +74,7 @@ The callback function with `function(err, detail)` signature that the normalizer
 #### Returns
 No return value.
 #### Example
-```
+``` javascript
 var normalize = require('json-normalizer');
 var schema = {
 	"properties": {
@@ -80,7 +105,7 @@ Note that loaders must also be sync version.
 #### Returns
 The normalized schema.
 #### Example
-```
+``` javascript
 var normalize = require('json-normalizer');
 var schema = {
 	"properties": {
@@ -162,7 +187,7 @@ The definitions hash object. Keys in the hash object should be valid JSON pointe
 #### Returns
 No return value.
 #### Example
-```
+``` javascript
 var mapperFactory = require('json-normalizer/src/loader/mapper');
 // map json references to local schema files.
 var mapper = mapperFactory({
@@ -212,7 +237,7 @@ catch (err) {
 ### Alias and Array Type
 
 With the schema:
-```
+``` json
 {
     "properties": {
         "entries": {
@@ -223,7 +248,7 @@ With the schema:
 }
 ```
 will normalize this data object:
-```
+``` json
 {
     "entry": "index.js"
 }
@@ -238,7 +263,7 @@ to:
 ### Primary Property and Gathering Property
 
 With the schema:
-```
+``` json
 {
     "properties": {
         "src": {
@@ -265,17 +290,17 @@ With the schema:
 }
 ```
 will normalize this data object:
-```
+``` json
 "src/index.js"
 ```
 to:
-```
+``` json
 {
     "src": "src/index.js"
 }
 ```
 and this data object:
-```
+``` json
 {
     "src": "index.js",
     "base": "src",
@@ -284,7 +309,7 @@ and this data object:
 }
 ```
 to:
-```
+``` json
 {
     "src": "index.js",
     "options": {
@@ -296,7 +321,7 @@ to:
 ```
 
 ### Extending Schema
-```
+``` json
 {
 	"definitions": {
 		"options": {
@@ -338,17 +363,27 @@ to:
 ```
 Please refer to test for more examples.
 
+## Build and Contribute
+``` bash
+$ git clone https://github.com/amobiz/json-normalizer.git
+$ cd json-normalizer
+$ npm install
+```
+
+## Issues
+[Iessues](https://github.com/amobiz/json-normalizer/issues)
+
 ## Test
 Tests are written in mocha. Run tests in terminal:
-
-$ `npm test`
+``` bash
+$ npm test
+```
 
 
 ## Change Logs
-
-### 0.1.1
-* Add sync version.
-* Remove mapper#add() method, use mapper#map() instead.
+* 2015/09/15 - 0.1.1
+	* Add sync version.
+	* Remove mapper#add() method, use mapper#map() instead.
 
 ## License
 MIT
