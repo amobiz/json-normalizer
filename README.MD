@@ -1,12 +1,12 @@
-# json-normalizer 
+# json-normalizer
 Normalize a json object to meets a json-schema using extended schema descriptor.
- 
-[![MIT](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/amobiz/json-normalizer/blob/master/LICENSE) [![npm version](https://badge.fury.io/js/json-normalizer.svg)](http://badge.fury.io/js/json-normalizer) [![David Dependency Badge](https://david-dm.org/amobiz/json-normalizer.svg)](https://david-dm.org/amobiz/json-normalizer) 
+
+[![MIT](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/amobiz/json-normalizer/blob/master/LICENSE) [![npm version](https://badge.fury.io/js/json-normalizer.svg)](http://badge.fury.io/js/json-normalizer) [![David Dependency Badge](https://david-dm.org/amobiz/json-normalizer.svg)](https://david-dm.org/amobiz/json-normalizer)
 
 [![NPM](https://nodei.co/npm/json-normalizer.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/json-normalizer.png?downloads=true&downloadRank=true&stars=true) [![NPM](https://nodei.co/npm-dl/json-normalizer.png?months=6&height=3)](https://nodei.co/npm/json-normalizer/)
 
- 
-Note: Json-normalizer is not a [json-schema](http://json-schema.org/) validator. If you are looking for json-schema validators, 
+
+Note: Json-normalizer is not a [json-schema](http://json-schema.org/) validator. If you are looking for json-schema validators,
 please check out here: [json-schema validators](https://www.npmjs.com/search?q=json-schema+validator).
 
 
@@ -29,7 +29,7 @@ please check out here: [json-schema validators](https://www.npmjs.com/search?q=j
 * [License](#license)
 
 ## Overview
- 
+
 ### The Problems
 
 You want:
@@ -43,7 +43,7 @@ You want:
 The normalizer is based on json-schema with the "[normalizable](https://raw.githubusercontent.com/amobiz/json-normalizer/master/test/spec/schema/normalizable#)" extension:
 
 1. Properties can have alias and being normalized, using the "`alias`" keyword.
-2. For schemas of "`object`" type, a "`primary`" property can be specified, 
+2. For schemas of "`object`" type, a "`primary`" property can be specified,
    that when provided value is not an object (a primitive or an array), can be assigned to.
 3. For schemas of "`object`" type, a "`gathering`" property can be specified,  that when "`additionalProperties`" is set to false, all unrecognized additional properties can be gathered to. The "`gathering`" property name defaults to "`others`".
 4. For schemas of "`array`" type, if the provided value is not an array, converts that value to an array automatically.
@@ -202,7 +202,7 @@ var schema = {
 	"properties": {
 		"userId": { "type": "integer" },
 		"userProfile": { "$ref": "http://json-schema.org/card" }
-	}     
+	}
 };
 
 // Async Version
@@ -381,6 +381,9 @@ $ npm test
 
 
 ## Change Logs
+* 2015/10/25 - 0.1.2
+	* Fix Bug: convert value to array if primary property's type is array.
+
 * 2015/09/15 - 0.1.1
 	* Add sync version.
 	* Remove mapper#add() method, use mapper#map() instead.

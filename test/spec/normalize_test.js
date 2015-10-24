@@ -101,13 +101,13 @@ describe('normalize()', function() {
                 "name": "accepts a simple string and converts to globs array",
                 "value": "src",
                 "expected": {
-                    "globs": "src"
+                    "globs": ["src"]
                 }
             }, {
                 "name": "accepts a single glob string and converts to globs array",
                 "value": "**/*.css",
                 "expected": {
-                    "globs": "**/*.css"
+                    "globs": ["**/*.css"]
                 }
             }, {
                 "name": "accepts an array as globs",
