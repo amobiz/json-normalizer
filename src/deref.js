@@ -6,38 +6,38 @@ var traverse = require('./lib/util').traverse;
 
 /**
  * Dereference a schema that using JSON references.
- * 
- * Default implementation supports only local references, 
- * i.e. references that starts with “#“. 
+ *
+ * Default implementation supports only local references,
+ * i.e. references that starts with “#“.
  * Custom loaders can be provided via the options object.
- * 
+ *
  * @context don't care.
  * @param schema: string
  * @param option.loader | option.loaders: function | [function]
  *   A loader function or an array of loader functions.
- *  
+ *
  *   Loader must be a function that returns truthy if it can handle the given reference, falsy otherwise.
  *   Loader takes root schema, $ref and callback(err, schema) as parameters in that order.
  *   A local loader that is always tested first, and other loaders provided in options are then tested by the order they being listed.
- * 
+ *
  * @param callback: function
- * @return no return value. 
- * 
+ * @return no return value.
+ *
  */
 function deref(schema, options, callback) {
     var root, loaders, error;
-    
+
     if (typeof options === 'function') {
         callback = options;
         options = {};
     }
-    
+
     root = _.cloneDeep(schema);
     loaders = _loaders(require('./loader/local'), options);
     process.nextTick(function() {
         traverse(root, _visit, _done);
     });
-    
+
     function _visit(node, key, owner, next) {
         if (node === root) {
             next();
@@ -61,13 +61,13 @@ function deref(schema, options, callback) {
                 message: 'no appropriate loader',
                 $ref: $ref
                 });
-            
+
             function _try(loader) {
                 return loader(root, $ref, resolve);
             }
         }
     }
-    
+
     function _done() {
         process.nextTick(function() {
             if (error) {
@@ -84,10 +84,10 @@ function sync(schema, options) {
     var root = _.cloneDeep(schema);
     var loaders = _loaders(require('./loader/local').sync, options || {});
     return traverse(root, _visit, _done);
-    
+
     function _visit(node, key, owner, next) {
         var schema;
-        
+
         if (node === root) {
             return false;
         }
@@ -98,10 +98,10 @@ function sync(schema, options) {
             }
         }
         next();
-    
+
         function _load($ref) {
             return _evaluate(loaders, _try);
-            
+
             function _try(loader) {
                 return loader(root, $ref);
             }
@@ -122,7 +122,7 @@ function _loaders(local, options) {
 
 function _evaluate(collection, iterator) {
     var i, n, v;
-    
+
     for (i = 0, n = collection.length; i < n; ++i) {
         if (v = iterator(collection[i])) {
             return v;

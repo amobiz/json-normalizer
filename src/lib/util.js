@@ -5,7 +5,7 @@ var _ = require('lodash');
 
 function iterate(collection, iterator, done) {
     var keys, n;
-    
+
     if (_.isPlainObject(collection)) {
         keys = Object.keys(collection);
         n = keys.length;
@@ -22,7 +22,7 @@ function iterate(collection, iterator, done) {
 
     function _visit(i) {
         var key;
-        
+
         if (i < n) {
             key = keys ? keys[i] : i;
             if (iterator(collection[key], key, collection, _next) === false) {
@@ -32,7 +32,7 @@ function iterate(collection, iterator, done) {
         else {
             done();
         }
-        
+
         function _next() {
             _visit(i+1);
         }
@@ -41,12 +41,12 @@ function iterate(collection, iterator, done) {
 
 function traverse(collection, iterator, done) {
     return iterate(collection, _visit, done);
-    
+
     function _visit(val, key, collection, next) {
         if (iterator(val, key, collection, _next) === false) {
             return false;
         }
-    
+
         function _next() {
             traverse(val, iterator, next);
         }
@@ -62,7 +62,7 @@ function reduce(collection, iteratee, accumulator) {
     }
     return iteratee(accumulator, collection);
 }
-    
+
 exports.iterate = iterate;
 exports.traverse = traverse;
 exports.reduce = reduce;
