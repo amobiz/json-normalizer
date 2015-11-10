@@ -18,6 +18,9 @@ var _ = require('lodash');
 var reduce = require('./lib/util').reduce;
 var deref = require('./deref');
 
+// TODO: options: allow ignore unknown properties.
+// TODO: add default values if absent. options: only when required.
+// TODO: throw TypeError instead of errors array.
 function normalize(schema, values, options, callback) {
     if (typeof options === 'function') {
         callback = options;
