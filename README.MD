@@ -382,7 +382,7 @@ $ npm test
 
 ## Change Logs
 * 2015/10/25 - 0.1.2
-	* Fix Bug: convert value to array if primary property's type is array.
+	* Bug fix: convert value to array if primary property's type is array.
 
 * 2015/09/15 - 0.1.1
 	* Add sync version.
