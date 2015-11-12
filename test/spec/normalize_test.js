@@ -6,36 +6,12 @@ var assert = require('assert');
 var normalize = require('../../src/normalize');
 
 describe('normalize()', function() {
-    
-    describe('required', function() {
-        var schema = {
-            "properties": {
-                "path": {
-                    "type": "string"
-                }
-            },
-            "required": ["path"]
-        };
-        var cases = [{
-            "name": "detect missing required property",
-            "schema": schema,
-            value: {
-            },
-            error: [{
-                error: "required property missing",
-                message: "property \"path\" is required but missing",
-                schema: schema
-            }]
-        }];
-        
-        test(null, cases);
-    });
-    
+
     describe('self-certification', function() {
-       
+
         var schema = json(__dirname + '/schema/schema');
         var normalizable = json(__dirname + '/schema/normalizable');
-        
+
         var cases = [{
             name: 'self-certification standard json-schema',
             schema: schema,
@@ -52,14 +28,14 @@ describe('normalize()', function() {
                 })
             }
         }];
-        
+
         test(null, cases);
     });
-    
+
     describe('samples', function() {
-                
+
         describe('src()', function() {
-            
+
             var schema = {
                 "properties": {
                     "globs": {
@@ -96,7 +72,7 @@ describe('normalize()', function() {
                 "primary": "globs",
                 "gathering": "options"
             };
-            
+
             var cases = [{
                 "name": "accepts a simple string and converts to globs array",
                 "value": "src",
@@ -184,12 +160,12 @@ describe('normalize()', function() {
                     }
                 }
             }];
-    
+
             test(schema, cases);
         });
-        
+
         describe('dest()', function() {
-            
+
             var schema = {
                 "properties": {
                     "path": {
@@ -215,7 +191,7 @@ describe('normalize()', function() {
                 "primary": "path",
                 "gathering": "options"
             };
-            
+
             var cases = [{
                 "name": "accepts a simple string and converts to the primary property \"path\"",
                 "value": "dist",
@@ -275,10 +251,10 @@ describe('normalize()', function() {
                     }
                 }
             }];
-    
+
             test(schema, cases);
         });
-        
+
         describe('browserify', function() {
             var schema = {
                 "definitions": {
@@ -376,13 +352,13 @@ describe('normalize()', function() {
                     "options": {}
                 }
             };
-            
+
             var options = {
                 "extensions": [".js", ".json", ".jsx", ".es6", ".ts"],
                 "plugin": ["tsify"],
                 "transform": ["brfs"]
             };
-            
+
             var cases = [{
                 "name": "accepts single bundle",
                 "value": {
@@ -504,22 +480,22 @@ describe('normalize()', function() {
                     }]
                 }
             }];
-            
+
             test(schema, cases);
         });
     });
 });
 
 function json(file) {
-    return JSON.parse(fs.readFileSync(file, 'utf8'));    
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
 function test(schema, cases) {
-    var tests = cases.filter(only); 
+    var tests = cases.filter(only);
     if (tests.length === 0) {
         tests = cases.filter(skip);
     }
-    
+
     tests.forEach(function(test, index) {
         it('async: should ' + (test.name || 'pass test case ' + index), function() {
             return new Promise(function(resolve, reject) {
@@ -541,7 +517,7 @@ function test(schema, cases) {
 
         it('sync: should ' + (test.name || 'pass test case ' + index), function() {
             var options;
-            
+
             if (test.debug) {
                 debugger;
             }
@@ -553,7 +529,8 @@ function test(schema, cases) {
             try {
                 var actual = normalize.sync(schema || test.schema, test.value, options || {});
                 if (test.expected) {
-                    assert.deepEqual(actual, test.expected);
+					assert(! ('errors' in actual));
+                    assert.deepEqual(actual.values, test.expected);
                 }
             }
             catch (ex) {
@@ -561,11 +538,11 @@ function test(schema, cases) {
             }
         });
     });
-    
+
     function only(test) {
         return test.only;
-    }        
-    
+    }
+
     function skip(test) {
         return !test.skip;
     }

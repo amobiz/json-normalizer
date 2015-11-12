@@ -100,10 +100,10 @@ normalize(schema, data, options, function(err, result) {
 ```
 
 ### `normalize.sync(schema, data [, options])`
-Same as the async version but returns normalized schema. Throws when error;
+Same as the async version but returns an object with normalized schema and errors encountered.
 Note that loaders must also be sync version.
 #### Returns
-The normalized schema.
+An object with the normalized schema and errors encountered.
 #### Example
 ``` javascript
 var normalize = require('json-normalizer');
@@ -123,11 +123,12 @@ var mapper = ...; // see example bellow
 var options = {
     loaders: [mapper]
 };
-try {
-    var normalized = normalize(schema, data, options);
-    // process the normalized JSON data object here.
-} catch (err) {
-    // handle error here.
+var result = normalize(schema, data, options);
+if (result.errors) {
+	// Deal with errors array
+} else {
+	// process the normalized JSON data object here.
+	result.values
 }
 ```
 
@@ -381,6 +382,9 @@ $ npm test
 
 
 ## Change Logs
+* 2015/11/12 - 0.2.0
+	* Break Change: stop validate "required" property, since json-normalizer is not a validator.
+
 * 2015/10/25 - 0.1.2
 	* Bug fix: convert value to array if primary property's type is array.
 

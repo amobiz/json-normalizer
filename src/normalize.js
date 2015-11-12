@@ -20,7 +20,6 @@ var deref = require('./deref');
 
 // TODO: options: allow ignore unknown properties.
 // TODO: add default values if absent. options: only when required.
-// TODO: throw TypeError instead of errors array.
 function normalize(schema, values, options, callback) {
     if (typeof options === 'function') {
         callback = options;
@@ -29,7 +28,7 @@ function normalize(schema, values, options, callback) {
     process.nextTick(_async);
 
     function _async() {
-        deref(schema, options || {}, function(err, schema) {
+        deref(schema, options || {}, function (err, schema) {
             var errors;
 
             if (err) {
@@ -50,15 +49,18 @@ function normalize(schema, values, options, callback) {
 }
 
 function sync(schema, values, options) {
-    var errors;
+    var errors, result;
 
-    errors = [];
+	errors = []
     schema = deref.sync(schema, options || {});
-    schema = _process(schema, values, errors);
-    if (errors.length > 0) {
-        throw errors;
-    }
-    return schema;
+    values = _process(schema, values, errors);
+	result = {
+		values: values
+	};
+	if (errors.length) {
+		result.errors = errors;
+	}
+	return result;
 }
 
 function _process(schema, values, errors) {
@@ -69,9 +71,7 @@ function _process(schema, values, errors) {
 
     function _instance(schema, values) {
         schema = _extends(schema);
-        return _validate(schema,
-            _object(schema, values) || _primary(schema, values) || _primitive(schema, values)
-        );
+        return _object(schema, values) || _primary(schema, values) || _primitive(schema, values);
     }
 
     function _extends(schema) {
@@ -198,39 +198,10 @@ function _process(schema, values, errors) {
             return resolved;
         }
     }
-
-    // TODO: validate should be done after full normalized.
-    //    but, think about how to cache schemas.
-    function _validate(schema, resolved) {
-        var values;
-
-        values = resolved ? resolved() : {};
-
-        reduce(schema.required, _check);
-        return resolved;
-
-        function _check(prev, property) {
-            if (! (property in values)) {
-                _error('missing', schema, property);
-            }
-        }
-    }
-
-    function _error(type, schema, property) {
-        switch (type) {
-            case 'missing':
-                errors.push({
-                    error: 'required property missing',
-                    message: 'property "' + property + '" is required but missing',
-                    schema: schema
-                });
-                break;
-        }
-    }
 }
 
 function resolve(value) {
-    return function() {
+    return function () {
         return value;
     };
 }
