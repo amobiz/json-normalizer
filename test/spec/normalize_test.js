@@ -71,6 +71,18 @@ describe('normalize()', function() {
 				"ignoreUnknownProperties": true,
 			}
 		}, {
+			"name": "options.ignoreUnknownProperties can ignore unknown properties",
+			"schema": {
+				"properties": properties
+			},
+			"value": value,
+			"expected": {
+				"known": "known"
+			},
+			"options": {
+				"ignoreUnknownProperties": true,
+			}
+		}, {
 			"name": "no additionalProperties, no gathering, no options.ignoreUnknownProperties, then others",
 			"schema": {
 				"properties": properties
