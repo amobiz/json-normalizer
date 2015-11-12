@@ -32,6 +32,76 @@ describe('normalize()', function() {
         test(null, cases);
     });
 
+	describe('features', function() {
+		var properties = {
+			"known": {
+				"type": "string"
+			}
+		};
+		var value = {
+			"known": "known",
+			"unknown": "unknown"
+		};
+		var cases = [{
+			"name": "additionalProperties takes priority than gathering",
+			"schema": {
+				"properties": properties,
+				"additionalProperties": true,
+				"gathering": "rest"
+			},
+			"value": value,
+			"expected": {
+				"known": "known",
+				"unknown": "unknown"
+			}
+		}, {
+			"name": "gathering takes priority than options.ignoreUnknownProperties",
+			"schema": {
+				"properties": properties,
+				"gathering": "rest"
+			},
+			"value": value,
+			"expected": {
+				"known": "known",
+				"rest": {
+					"unknown": "unknown"
+				}
+			},
+			"options": {
+				"ignoreUnknownProperties": true,
+			}
+		}, {
+			"name": "no additionalProperties, no gathering, no options.ignoreUnknownProperties, then others",
+			"schema": {
+				"properties": properties
+			},
+			"value": value,
+			"expected": {
+				"known": "known",
+				"others": {
+					"unknown": "unknown"
+				}
+			}
+		}, {
+			"name": "others can be renamed by options.gatheringProperties",
+			"schema": {
+				"properties": properties
+			},
+			"value": value,
+			"expected": {
+				"known": "known",
+				"something else": {
+					"unknown": "unknown"
+				}
+			},
+			"options": {
+				"gatheringProperties": "something else"
+			}
+		}];
+
+        test(null, cases);
+	});
+
     describe('samples', function() {
 
         describe('src()', function() {
@@ -516,18 +586,20 @@ function test(schema, cases) {
         });
 
         it('sync: should ' + (test.name || 'pass test case ' + index), function() {
-            var options;
+            var options = {};
 
             if (test.debug) {
                 debugger;
             }
+
             if (test.options) {
-                options = {
-                    loader: test.options.loader.sync
-                };
+				Object.assign(options, test.options);
+				if (test.options.loader) {
+                    options.loader = test.options.loader.sync;
+				}
             }
             try {
-                var actual = normalize.sync(schema || test.schema, test.value, options || {});
+                var actual = normalize.sync(schema || test.schema, test.value, options);
                 if (test.expected) {
 					assert(! ('errors' in actual));
                     assert.deepEqual(actual.values, test.expected);

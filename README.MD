@@ -384,6 +384,8 @@ $ npm test
 ## Change Logs
 * 2015/11/12 - 0.2.0
 	* Break Change: stop validate "required" property, since json-normalizer is not a validator.
+	* Feature: options.ignoreUnknownProperties allow ignore unknown properties.
+	* Feature: options.gatheringProperties allow set default gathering name other then "others".
 
 * 2015/10/25 - 0.1.2
 	* Bug fix: convert value to array if primary property's type is array.

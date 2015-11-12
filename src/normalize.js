@@ -25,6 +25,7 @@ function normalize(schema, values, options, callback) {
         callback = options;
         options = null;
     }
+	options = options || {};
     process.nextTick(_async);
 
     function _async() {
@@ -36,7 +37,7 @@ function normalize(schema, values, options, callback) {
             }
             else {
                 errors = [];
-                schema = _process(schema, values, errors);
+                schema = _process(schema, values, errors, options);
                 if (errors.length > 0) {
                     callback(errors);
                 }
@@ -51,9 +52,10 @@ function normalize(schema, values, options, callback) {
 function sync(schema, values, options) {
     var errors, result;
 
+	options = options || {};
 	errors = []
-    schema = deref.sync(schema, options || {});
-    values = _process(schema, values, errors);
+    schema = deref.sync(schema, options);
+    values = _process(schema, values, errors, options);
 	result = {
 		values: values
 	};
@@ -63,7 +65,7 @@ function sync(schema, values, options) {
 	return result;
 }
 
-function _process(schema, values, errors) {
+function _process(schema, values, errors, options) {
     var resolved = _instance(schema, values);
     if (resolved) {
         return resolved();
@@ -140,24 +142,43 @@ function _process(schema, values, errors) {
         }
 
         function _gathering() {
-            var name, gathering;
+            var gathering;
 
             gathering = _.omit(values, omits)
 
             if (_.size(gathering)) {
+				_additional() || _strict() || _default();
+            }
+
+			function _additional() {
                 if (schema.additionalProperties) {
                     _.defaults(ret, gathering);
+					return true;
                 }
-                else {
-                    name = schema.gathering || 'others';
-                    if (ret[name]) {
-                        _.defaults(ret[name], gathering);
-                    }
-                    else {
-                        ret[name] = gathering;
-                    }
-                }
-            }
+			}
+
+			function _strict() {
+				if (typeof schema.gathering === 'string') {
+					__gathering(schema.gathering);
+					return true;
+				}
+			}
+
+			function _default() {
+				if (!options.ignoreUnknownProperties) {
+					__gathering(options.gatheringProperties || 'others');
+					return true;
+				}
+			}
+
+			function __gathering(name) {
+				if (ret[name]) {
+					_.defaults(ret[name], gathering);
+				}
+				else {
+					ret[name] = gathering;
+				}
+			}
         }
     }
 
