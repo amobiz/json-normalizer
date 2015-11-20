@@ -65,7 +65,7 @@ function sync(schema, values, options) {
 }
 
 function _process(schema, values, errors, options) {
-    var resolved = _instance(schema, values);
+    var resolved = _non_object(schema, values) || _instance(schema, values);
     if (resolved) {
         return resolved();
     }
@@ -84,6 +84,12 @@ function _process(schema, values, errors, options) {
         }
         return schema;
     }
+
+	function _non_object(schema, values) {
+		if (schema.type && (schema.type !== 'object' || !_.contains(schema.type, 'object'))) {
+			return resolve(values);
+		}
+	}
 
     function _object(schema, values) {
         var omits, ret;

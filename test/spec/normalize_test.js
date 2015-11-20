@@ -32,6 +32,72 @@ describe('normalize()', function() {
         test(null, cases);
     });
 
+	describe('process only object type at top level', function() {
+		var cases = [{
+			"name": "not process non-object: array",
+			"schema": {
+				"type": "array"
+			},
+			"value": [1, 3, 4, 5],
+			"expected": [1, 3, 4, 5]
+		}, {
+			"name": "not process non-object: enum",
+			"schema": {
+				"enum": ['a', 'b', 'c']
+			},
+			"value": "a",
+			"expected": "a"
+		}, {
+			"name": "not process non-object: string",
+			"schema": {
+				"type": "string"
+			},
+			"value": "abc",
+			"expected": "abc"
+		}, {
+			"name": "not process non-object: integer",
+			"schema": {
+				"type": "integer"
+			},
+			"value": 999,
+			"expected": 999
+		}, {
+			"name": "not process non-object: number",
+			"schema": {
+				"type": "integer"
+			},
+			"value": 99.99,
+			"expected": 99.99
+		}, {
+			"name": "not process non-object: boolean",
+			"schema": {
+				"type": "integer"
+			},
+			"value": true,
+			"expected": true
+		}, {
+			"name": "not process non-object: multiple types",
+			"schema": {
+				"type": ["string", "array", "number", "integer", "boolean", "null"]
+			},
+			"value": [1, 3, 4, 5],
+			"expected": [1, 3, 4, 5]
+		}, {
+			"name": "process object if defined in multiple types",
+			"schema": {
+				"type": ["string", "array", "number", "integer", "boolean", "null", "object"]
+			},
+			"value": {
+				"name": "object"
+			},
+			"expected": {
+				"name": "object"
+			}
+		}];
+
+		test(null, cases);
+	});
+
 	describe('features', function() {
 		var properties = {
 			"known": {
