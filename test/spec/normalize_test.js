@@ -98,7 +98,7 @@ describe('normalize()', function() {
 		test(null, cases);
 	});
 
-	describe('features', function() {
+	describe('features - options', function() {
 		var properties = {
 			"known": {
 				"type": "string"
@@ -175,6 +175,51 @@ describe('normalize()', function() {
 			"options": {
 				"gatheringProperties": "something else"
 			}
+		}];
+
+        test(null, cases);
+	});
+
+	describe('features - defaults', function () {
+		var cases = [{
+			"name": "add default if required",
+			"schema": {
+				"properties": {
+					"known": {
+						"type": "string",
+						"default": "known"
+					}
+				},
+				"required": ["known"]
+			},
+			"value": {},
+			"expected": {
+				"known": "known"
+			}
+		}, {
+			"name": "not add default if default not defined (and hence invalid, but we don't validate that.)",
+			"schema": {
+				"properties": {
+					"known": {
+						"type": "string"
+					}
+				},
+				"required": ["known"]
+			},
+			"value": {},
+			"expected": {}
+		}, {
+			"name": "not add default if not required",
+			"schema": {
+				"properties": {
+					"known": {
+						"type": "string",
+						"default": "known"
+					}
+				}
+			},
+			"value": {},
+			"expected": {}
 		}];
 
         test(null, cases);
@@ -651,12 +696,15 @@ function test(schema, cases) {
                     debugger;
                 }
                 normalize(schema || test.schema, test.value, test.options || {}, function(err, actual) {
-                    if (test.expected) {
-                        assert.deepEqual(actual, test.expected);
-                    }
-                    else if (test.error) {
-                        assert(err);
-                        assert.deepEqual(err, test.error);
+                    if (err) {
+                        if (test.error) {
+                            assert(err);
+                            assert.deepEqual(err, test.error);
+                        }
+                    } else {
+                        if (test.expected) {
+                            assert.deepEqual(actual, test.expected);
+                        }
                     }
                     resolve();
                 });

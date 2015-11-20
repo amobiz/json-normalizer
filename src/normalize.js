@@ -65,10 +65,7 @@ function sync(schema, values, options) {
 }
 
 function _process(schema, values, errors, options) {
-    var resolved = _non_object(schema, values) || _instance(schema, values);
-    if (resolved) {
-        return resolved();
-    }
+    return (_non_object(schema, values) || _instance(schema, values) || resolve({}))();
 
     function _instance(schema, values) {
         schema = _extends(schema);
@@ -96,7 +93,7 @@ function _process(schema, values, errors, options) {
 
         if ((schema.type === 'object' || schema.properties || schema.patternProperties) && _.isPlainObject(values)) {
             omits = [];
-            ret = {}
+            ret = {};
             _properties();
             _gathering();
             return _filter(resolve(ret));
@@ -105,12 +102,12 @@ function _process(schema, values, errors, options) {
         function _properties() {
             _.forOwn(schema.properties, _property);
 
-            function _property(schema, property) {
-                schema = _extends(schema)
-                _exact(_resolve) || _alias(_resolve);
+            function _property(propertySchema, property) {
+                propertySchema = _extends(propertySchema)
+                _exact(_resolve) || _alias(_resolve) || _required(_resolve);
 
                 function _resolve(value) {
-                    _final(property, _array(schema, value) || _instance(schema, value));
+                    _final(property, _array(propertySchema, value) || _instance(propertySchema, value));
                 }
 
                 function _final(property, resolved) {
@@ -126,15 +123,34 @@ function _process(schema, values, errors, options) {
                 function _alias(resolve) {
                     var alias, i, n;
 
-                    if (schema.alias) {
-                        for (i = 0, n = schema.alias.length; i < n; ++i) {
-                            alias = schema.alias[i];
+                    if (propertySchema.alias) {
+                        for (i = 0, n = propertySchema.alias.length; i < n; ++i) {
+                            alias = propertySchema.alias[i];
                             if (_exists(alias, resolve)) {
                                 return true;
                             }
                         }
                     }
                 }
+
+				function _required(resolve) {
+					if (__required() && __absent() && __default()) {
+						resolve(__default());
+						return true;
+					}
+
+					function __required() {
+						return schema.required && _.contains(schema.required, property);
+					}
+
+					function __absent() {
+						return !(property in ret);
+					}
+
+					function __default() {
+						return propertySchema['default'];
+					}
+				}
 
                 function _exists(property, resolve) {
                     if (property in values) {
