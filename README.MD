@@ -382,6 +382,11 @@ $ npm test
 
 
 ## Change Logs
+* 2015/11/20 - 0.2.1
+	* Process only object type at top level.
+	* Always returns an object even nothing resolved.
+	* Feature: add default value if required.
+	
 * 2015/11/12 - 0.2.0
 	* Break Change: stop validate "required" property, since json-normalizer is not a validator.
 	* Feature: options.ignoreUnknownProperties allow ignore unknown properties.
