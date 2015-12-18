@@ -12,16 +12,16 @@ please check out here: [json-schema validators](https://www.npmjs.com/search?q=j
 
 #### Contents
 * [Overview](#overview)
-	* [The Problems](#the-problems)
-	* [The Solution](#the-solution)
+    * [The Problems](#the-problems)
+    * [The Solution](#the-solution)
 * [Install](#install)
 * [API](#api)
 * [Other functions that may be handy](#other-functions-that-may-be-handy)
-	* [Write your own loader](#write-your-own-loader)
+    * [Write your own loader](#write-your-own-loader)
 * [Usage Examples](usage-examples)
-	* [Alias and Array Type](#alias-and-array-type)
-	* [Primary Property and Gathering Property](#primary-property-and-gathering-property)
-	* [Extending Schema](#extending-schema)
+    * [Alias and Array Type](#alias-and-array-type)
+    * [Primary Property and Gathering Property](#primary-property-and-gathering-property)
+    * [Extending Schema](#extending-schema)
 * [Build and Contribute](#build-and-contribute)
 * [Issues](#issues)
 * [Test](#test)
@@ -51,7 +51,7 @@ The normalizer is based on json-schema with the "[normalizable](https://raw.gith
 
 ## Install
 ``` bash
-$ npm install --save json-normalizer
+$ npm install json-normalizer
 ```
 
 ## API
@@ -77,15 +77,15 @@ No return value.
 ``` javascript
 var normalize = require('json-normalizer');
 var schema = {
-	"properties": {
-		"entries": {
-			"alias": "entry",
-			"type": "array"
-		}
-	}
+    "properties": {
+        "entries": {
+            "alias": "entry",
+            "type": "array"
+        }
+    }
 };
 var data = {
-	"entry": "index.js"
+    "entry": "index.js"
 };
 // optional, only needed if your schema references remote schema.
 var mapper = ...; // see example bellow
@@ -108,15 +108,15 @@ An object with the normalized schema and errors encountered.
 ``` javascript
 var normalize = require('json-normalizer');
 var schema = {
-	"properties": {
-		"entries": {
-			"alias": "entry",
-			"type": "array"
-		}
-	}
+    "properties": {
+        "entries": {
+            "alias": "entry",
+            "type": "array"
+        }
+    }
 };
 var data = {
-	"entry": "index.js"
+    "entry": "index.js"
 };
 // optional, only needed if your schema references remote schema.
 var mapper = ...; // see example bellow
@@ -125,10 +125,10 @@ var options = {
 };
 var result = normalize(schema, data, options);
 if (result.errors) {
-	// Deal with errors array
+    // Deal with errors array
 } else {
-	// process the normalized JSON data object here.
-	result.values
+    // process the normalized JSON data object here.
+    result.values
 }
 ```
 
@@ -192,33 +192,33 @@ No return value.
 var mapperFactory = require('json-normalizer/src/loader/mapper');
 // map json references to local schema files.
 var mapper = mapperFactory({
-	'http://json-schema.org/draft-04/schema#': require('schema.json'),
-	'http://json-schema.org/geo': require('geo.json'),
-	'http://json-schema.org/card': require('card.json'),
-	'http://json-schema.org/calendar': require('calendar.json'),
-	'http://json-schema.org/address': require('address.json')
+    'http://json-schema.org/draft-04/schema#': require('schema.json'),
+    'http://json-schema.org/geo': require('geo.json'),
+    'http://json-schema.org/card': require('card.json'),
+    'http://json-schema.org/calendar': require('calendar.json'),
+    'http://json-schema.org/address': require('address.json')
 });
 var schema = {
-	...
-	"properties": {
-		"userId": { "type": "integer" },
-		"userProfile": { "$ref": "http://json-schema.org/card" }
-	}
+    ...
+    "properties": {
+        "userId": { "type": "integer" },
+        "userProfile": { "$ref": "http://json-schema.org/card" }
+    }
 };
 
 // Async Version
 deref(schema, { loader: mapper }, function(err, schema) {
-	if (err) {
-	    // handle error here.
-	}
-	else {
-	    // use the dereferenced schema.
+    if (err) {
+        // handle error here.
+    }
+    else {
+        // use the dereferenced schema.
     }
 });
 
 // Sync Version
 try {
-	var deferenced = deref.sync(schema, { loader: mapper.sync });
+    var deferenced = deref.sync(schema, { loader: mapper.sync });
     // use the dereferenced schema.
 }
 catch (err) {
@@ -272,15 +272,15 @@ With the schema:
         },
         "options": {
             "properties": {
-	            "base": {
-		            "type": "string"
-	            },
-	            "read": {
-		            "type": "boolean"
-	            },
-	            "buffer": {
-		            "type": "boolean"
-	            }
+                "base": {
+                    "type": "string"
+                },
+                "read": {
+                    "type": "boolean"
+                },
+                "buffer": {
+                    "type": "boolean"
+                }
             }
         },
         "required": ["src"]
@@ -324,42 +324,42 @@ to:
 ### Extending Schema
 ``` json
 {
-	"definitions": {
-		"options": {
-			"properties": {
-				"debug": {
-					"type": "boolean"
-				},
-				"sourcemap": {
-					"enum": [false, "inline", "external"]
-				}
-			}
-		}
-	},
-	"extends": [{
-		"$ref": "#/definitions/options"
-	}],
-	"properties": {
-		"bundles": {
-			"alias": ["bundle"],
-			"type": "array",
-			"extends": [{
-				"$ref": "#/definitions/options"
-			}],
-			"properties": {
-				"entries": {
-					"alias": ["entry"],
-					"type": "array"
-				},
-				"options": {
-					"$ref": "#/definitions/options"
-				}
-			}
-		},
-		"options": {
-			"$ref": "#/definitions/options"
-		}
-	}
+    "definitions": {
+        "options": {
+            "properties": {
+                "debug": {
+                    "type": "boolean"
+                },
+                "sourcemap": {
+                    "enum": [false, "inline", "external"]
+                }
+            }
+        }
+    },
+    "extends": [{
+        "$ref": "#/definitions/options"
+    }],
+    "properties": {
+        "bundles": {
+            "alias": ["bundle"],
+            "type": "array",
+            "extends": [{
+                "$ref": "#/definitions/options"
+            }],
+            "properties": {
+                "entries": {
+                    "alias": ["entry"],
+                    "type": "array"
+                },
+                "options": {
+                    "$ref": "#/definitions/options"
+                }
+            }
+        },
+        "options": {
+            "$ref": "#/definitions/options"
+        }
+    }
 }
 ```
 Please refer to test for more examples.
@@ -383,24 +383,24 @@ $ npm test
 
 ## Change Logs
 * 2015/11/24 - 0.2.2
-	* Separate test code to [mocha-cases](https://github.com/amobiz/mocha-cases).
+    * Separate test code to [mocha-cases](https://github.com/amobiz/mocha-cases).
 
 * 2015/11/20 - 0.2.1
-	* Process only object type at top level.
-	* Always return an object even nothing resolved.
-	* Feature: add default value if required.
+    * Process only object type at top level.
+    * Always return an object even nothing resolved.
+    * Feature: add default value if required.
 
 * 2015/11/12 - 0.2.0
-	* Break Change: stop validate "required" property, since json-normalizer is not a validator.
-	* Feature: options.ignoreUnknownProperties allow ignore unknown properties.
-	* Feature: options.gatheringProperties allow set default gathering name other then "others".
+    * Break Change: stop validate "required" property, since json-normalizer is not a validator.
+    * Feature: options.ignoreUnknownProperties allow ignore unknown properties.
+    * Feature: options.gatheringProperties allow set default gathering name other then "others".
 
 * 2015/10/25 - 0.1.2
-	* Bug fix: convert value to array if primary property's type is array.
+    * Bug fix: convert value to array if primary property's type is array.
 
 * 2015/09/15 - 0.1.1
-	* Add sync version.
-	* Remove mapper#add() method, use mapper#map() instead.
+    * Add sync version.
+    * Remove mapper#add() method, use mapper#map() instead.
 
 ## License
 MIT
