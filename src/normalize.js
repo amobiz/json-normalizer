@@ -1,4 +1,9 @@
-/*global process*/
+'use strict';
+
+var _ = require('lodash');
+var reduce = require('./lib/util').reduce;
+var deref = require('./deref');
+
 /**
  * Normalizes a loose json data object to a strict json-schema data object.
  *
@@ -7,56 +12,46 @@
  * @param data The JSON data object.
  * @param options Optional. Currently only accepts loader or array of loaders.
  * @param options.loader | options.loaders A loader or an array of loaders
- *      that help loading remote schemas. Loaders are tested in the order listed.
+ *	  that help loading remote schemas. Loaders are tested in the order listed.
  * @param callback The callback function with `function(err, detail)` signature
- *      that the normalizer delivers the normalized JSON object to. Called with null context.
+ *	  that the normalizer delivers the normalized JSON object to. Called with null context.
  * @return No return value.
  */
-'use strict';
+function normalize(schema, values, optionalOptions, callbackFn) {
+	var options, callback;
 
-var _ = require('lodash');
-var reduce = require('./lib/util').reduce;
-var deref = require('./deref');
+	options = optionalOptions || {};
+	callback = callbackFn || optionalOptions;
+	process.nextTick(_async);
 
-// TODO: add default values if absent. options: only when required.
-function normalize(schema, values, options, callback) {
-    if (typeof options === 'function') {
-        callback = options;
-        options = null;
-    }
-	options = options || {};
-    process.nextTick(_async);
+	function _async() {
+		deref(schema, options || {}, function (err, derefSchema) {
+			var errors, result;
 
-    function _async() {
-        deref(schema, options || {}, function (err, schema) {
-            var errors;
-
-            if (err) {
-                callback(err);
-            }
-            else {
-                errors = [];
-                schema = _process(schema, values, errors, options);
-                if (errors.length > 0) {
-                    callback(errors);
-                }
-                else {
-                    callback(null, schema);
-                }
-            }
-        });
-    }
+			if (err) {
+				callback(err);
+			} else {
+				errors = [];
+				result = _process(derefSchema, values, errors, options);
+				if (errors.length > 0) {
+					callback(errors);
+				} else {
+					callback(null, result);
+				}
+			}
+		});
+	}
 }
 
-function sync(schema, values, options) {
-    var errors, result;
+function sync(schema, values, optionalOptions) {
+	var options, errors, result, derefSchema;
 
-	options = options || {};
-	errors = []
-    schema = deref.sync(schema, options);
-    values = _process(schema, values, errors, options);
+	options = optionalOptions || {};
+
+	errors = [];
+	derefSchema = deref.sync(schema, options);
 	result = {
-		values: values
+		values: _process(derefSchema, values, errors, options)
 	};
 	if (errors.length) {
 		result.errors = errors;
@@ -64,74 +59,68 @@ function sync(schema, values, options) {
 	return result;
 }
 
-function _process(schema, values, errors, options) {
-    return (_non_object(schema, values) || _instance(schema, values) || resolve({}))();
+function _process(rootSchema, rootValues, errors, options) {
+	return (_nonObject(rootSchema, rootValues) || _instance(rootSchema, rootValues) || resolve({}))();
 
-    function _instance(schema, values) {
-        schema = _extends(schema);
-        return _object(schema, values) || _primary(schema, values) || _primitive(schema, values);
-    }
+	function _instance(schema, values) {
+		var extendedSchema;
 
-    function _extends(schema) {
-        var schemas;
-        if (schema.extends) {
-            schemas = [{}, schema].concat(schema.extends);
-            schema = _.defaultsDeep.apply(null, schemas);
-            schema = _.omit(schema, ['extends']);
-        }
-        return schema;
-    }
+		extendedSchema = extend(schema);
+		return _object(extendedSchema, values) || _primary(extendedSchema, values) || _primitive(extendedSchema, values);
+	}
 
-	function _non_object(schema, values) {
+	function _nonObject(schema, values) {
 		if (schema.type && (schema.type !== 'object' || !_.contains(schema.type, 'object'))) {
 			return resolve(values);
 		}
 	}
 
-    function _object(schema, values) {
-        var omits, ret;
+	function _object(schema, values) {
+		var omits, ret;
 
-        if ((schema.type === 'object' || schema.properties || schema.patternProperties) && _.isPlainObject(values)) {
-            omits = [];
-            ret = {};
-            _properties();
-            _gathering();
-            return _filter(resolve(ret));
-        }
+		if ((schema.type === 'object' || schema.properties || schema.patternProperties) && _.isPlainObject(values)) {
+			omits = [];
+			ret = {};
+			_properties();
+			_gathering();
+			return _filter(resolve(ret));
+		}
 
-        function _properties() {
-            _.forOwn(schema.properties, _property);
+		function _properties() {
+			_.forOwn(schema.properties, _property);
 
-            function _property(propertySchema, property) {
-                propertySchema = _extends(propertySchema)
-                _exact(_resolve) || _alias(_resolve) || _required(_resolve);
+			function _property(propertySchema, property) {
+				var extendedPropertySchema;
 
-                function _resolve(value) {
-                    _final(property, _array(propertySchema, value) || _instance(propertySchema, value));
-                }
+				extendedPropertySchema = extend(propertySchema);
+				_exact(_resolve) || _alias(_resolve) || _required(_resolve);
 
-                function _final(property, resolved) {
-                    if (resolved) {
-                        set(ret, property, resolved());
-                    }
-                }
+				function _resolve(value) {
+					_final(property, _array(extendedPropertySchema, value) || _instance(extendedPropertySchema, value));
+				}
 
-                function _exact(resolve) {
-                    return _exists(property, resolve);
-                }
+				function _final(property, resolved) {
+					if (resolved) {
+						set(ret, property, resolved());
+					}
+				}
 
-                function _alias(resolve) {
-                    var alias, i, n;
+				function _exact(resolve) {
+					return _exists(property, resolve);
+				}
 
-                    if (propertySchema.alias) {
-                        for (i = 0, n = propertySchema.alias.length; i < n; ++i) {
-                            alias = propertySchema.alias[i];
-                            if (_exists(alias, resolve)) {
-                                return true;
-                            }
-                        }
-                    }
-                }
+				function _alias(resolve) {
+					var alias, i, n;
+
+					if (extendedPropertySchema.alias) {
+						for (i = 0, n = extendedPropertySchema.alias.length; i < n; ++i) {
+							alias = extendedPropertySchema.alias[i];
+							if (_exists(alias, resolve)) {
+								return true;
+							}
+						}
+					}
+				}
 
 				function _required(resolve) {
 					if (__required() && __absent() && __default()) {
@@ -148,34 +137,34 @@ function _process(schema, values, errors, options) {
 					}
 
 					function __default() {
-						return propertySchema['default'];
+						return extendedPropertySchema.default;
 					}
 				}
 
-                function _exists(property, resolve) {
-                    if (property in values) {
-                        omits.push(property);
-                        resolve(values[property]);
-                        return true;
-                    }
-                }
-            }
-        }
+				function _exists(property, resolve) {
+					if (property in values) {
+						omits.push(property);
+						resolve(values[property]);
+						return true;
+					}
+				}
+			}
+		}
 
-        function _gathering() {
-            var gathering;
+		function _gathering() {
+			var gathering;
 
-            gathering = _.omit(values, omits)
+			gathering = _.omit(values, omits);
 
-            if (_.size(gathering)) {
+			if (_.size(gathering)) {
 				_additional() || _strict() || _default();
-            }
+			}
 
 			function _additional() {
-                if (schema.additionalProperties) {
-                    _.defaults(ret, gathering);
+				if (schema.additionalProperties) {
+					_.defaults(ret, gathering);
 					return true;
-                }
+				}
 			}
 
 			function _strict() {
@@ -195,62 +184,75 @@ function _process(schema, values, errors, options) {
 			function __gathering(name) {
 				if (ret[name]) {
 					_.defaults(ret[name], gathering);
-				}
-				else {
+				} else {
 					ret[name] = gathering;
 				}
 			}
-        }
-    }
+		}
+	}
 
-    function _primary(schema, values) {
-        if (schema.primary && typeof values !== 'undefined') {
-			var primarySchema = schema.properties && schema.properties[schema.primary];
-			var value = (primarySchema && _array(primarySchema, values) || resolve(values))();
-            return resolve(set({}, schema.primary, value));
-        }
-    }
+	function _primary(schema, values) {
+		var primarySchema, value;
 
-    function _primitive(schema, values) {
-        if (!schema.properties && !schema.primary) {
-            return resolve(values);
-        }
-    }
+		if (schema.primary && typeof values !== 'undefined') {
+			primarySchema = schema.properties && schema.properties[schema.primary];
+			value = (primarySchema && _array(primarySchema, values) || resolve(values))();
+			return resolve(set({}, schema.primary, value));
+		}
+	}
 
-    function _array(schema, values) {
-        // note: if schema.type is 'array, we force value to be an array.
-        if (schema.type === 'array' || (Array.isArray(values) && (!schema.type || _.contains(schema.type, 'array')))) {
-            return _filter(resolve(reduce(values, _item, [])));
-        }
+	function _primitive(schema, values) {
+		if (!schema.properties && !schema.primary) {
+			return resolve(values);
+		}
+	}
 
-        function _item(ret, values) {
-            return _accumulate(_filter(_instance(schema, values)));
+	function _array(schema, values) {
+		// note: if schema.type is 'array, we force value to be an array.
+		if (schema.type === 'array' || (Array.isArray(values) && (!schema.type || _.contains(schema.type, 'array')))) {
+			return _filter(resolve(reduce(values, _item, [])));
+		}
 
-            function _accumulate(resolved) {
-                if (resolved) {
-                    ret.push(resolved());
-                }
-                return ret;
-            }
-        }
-    }
+		function _item(ret, values) {
+			return _accumulate(_filter(_instance(schema, values)));
 
-    function _filter(resolved) {
-        if (resolved && _.size(resolved()) > 0) {
-            return resolved;
-        }
-    }
+			function _accumulate(resolved) {
+				if (resolved) {
+					ret.push(resolved());
+				}
+				return ret;
+			}
+		}
+	}
+
+	function _filter(resolved) {
+		if (resolved && _.size(resolved()) > 0) {
+			return resolved;
+		}
+	}
+}
+
+function extend(schema) {
+	var schemas, extendedSchema;
+
+	if (schema.extends) {
+		schemas = [{}, schema].concat(schema.extends);
+		extendedSchema = _.defaultsDeep.apply(null, schemas);
+		extendedSchema = _.omit(extendedSchema, ['extends']);
+		return extendedSchema;
+	}
+	return schema;
 }
 
 function resolve(value) {
-    return function () {
-        return value;
-    };
+	return function () {
+		return value;
+	};
 }
 
 function set(target, property, value) {
-    target[property] = value;
-    return target;
+	target[property] = value;
+	return target;
 }
 
 module.exports = normalize;
