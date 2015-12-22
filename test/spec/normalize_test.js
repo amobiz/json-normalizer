@@ -805,17 +805,12 @@ function test(schema, cases) {
 	}
 
 	function sync(values, optionalOptions) {
-		var options, result;
+		var options;
 
 		options = Object.assign({}, optionalOptions || {});
 		if (options.loader && options.loader.sync) {
 			options.loader = options.loader.sync;
 		}
-		result = normalize.sync(values.schema || schema, values.value, options);
-		if (result.errors) {
-			throw result.errors;
-		} else {
-			return result.values;
-		}
+		return normalize.sync(values.schema || schema, values.value, options);
 	}
 }
