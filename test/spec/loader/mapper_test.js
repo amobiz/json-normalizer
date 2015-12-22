@@ -2,7 +2,9 @@
 
 var _ = require('lodash');
 var assert = require('assert');
-var factory = require('../../../src/loader/mapper');
+
+var base = process.cwd();
+var factory = require(base + '/lib/loader/mapper');
 
 function shouldMatch(mapper, mappings) {
 	return Promise.all(Object.keys(mappings).map(function ($ref) {
