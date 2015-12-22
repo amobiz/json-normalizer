@@ -390,7 +390,7 @@ $ npm test
 * 2015/11/20 - 0.2.1
     * Feature: Process only object type at top level [deprecated in 0.3.0].
     * Feature: Always return an object even nothing resolved.
-    * Feature: add default value if required.
+    * Feature: Add default value if required.
 
 * 2015/11/12 - 0.2.0
     * Breaking Change: stop validate "required" property, since json-normalizer is not a validator.
@@ -398,7 +398,7 @@ $ npm test
     * Feature: options.gatheringProperties allow set default gathering name other then "others".
 
 * 2015/10/25 - 0.1.2
-    * Bug Fix: convert value to array if primary property's type is array.
+    * Bug Fix: Convert value to array if primary property's type is array.
 
 * 2015/09/15 - 0.1.1
     * Feature: Add sync version.
