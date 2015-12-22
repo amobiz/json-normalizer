@@ -66,11 +66,14 @@ The schema used to normalize the given JSON data object.
 ##### `data`
 The JSON data object.
 ##### `options`
-Optional. Currently only accepts a loader or an array of loaders.
 ###### `options.loader` | `options.loaders`
-A loader or an array of loaders that help loading remote schemas. Loaders are tested in the order listed.
+Optional. A loader or an array of loaders that help loading remote schemas. Loaders are tested in the order listed.
+###### `options.ignoreUnknownProperties`
+Optional. Allow ignore unknown properties.
+###### `options.gatheringProperties`
+Optional. Change default gathering name. Default was "`others`".
 #### `callback`
-The callback function with `function(err, detail)` signature that the normalizer delivers the normalized JSON object to. Called with null context.
+The callback function with `function(err, result)` signature that the normalizer delivers the normalized JSON value object to. Called with null context.
 #### Returns
 No return value.
 #### Example
@@ -100,10 +103,10 @@ normalize(schema, data, options, function(err, result) {
 ```
 
 ### `normalize.sync(schema, data [, options])`
-Same as the async version but returns an object with normalized schema and errors encountered.
-Note that loaders must also be sync version.
+Same as the async version but returns normalized JSON value object directly.
+Note that if specified, loaders must also be sync version.
 #### Returns
-An object with the normalized schema and errors encountered.
+The normalized JSON value object.
 #### Example
 ``` javascript
 var normalize = require('json-normalizer');
@@ -124,12 +127,7 @@ var options = {
     loaders: [mapper]
 };
 var result = normalize(schema, data, options);
-if (result.errors) {
-    // Deal with errors array
-} else {
-    // process the normalized JSON data object here.
-    result.values
-}
+// process the normalized JSON data object here.
 ```
 
 ## Other functions that may be handy:
@@ -382,25 +380,29 @@ $ npm test
 
 
 ## Change Logs
+* 2015/12/23 - 0.3.0
+    * Breaking Change: Sync version now returns normalized JSON value object directly since it never returns error.
+    * Feature: Process `items` property of schema that are `array` types.
+
 * 2015/11/24 - 0.2.2
-    * Separate test code to [mocha-cases](https://github.com/amobiz/mocha-cases).
+    * Misc: Extract test framework to [mocha-cases](https://github.com/amobiz/mocha-cases) project.
 
 * 2015/11/20 - 0.2.1
-    * Process only object type at top level.
-    * Always return an object even nothing resolved.
+    * Feature: Process only object type at top level [deprecated in 0.3.0].
+    * Feature: Always return an object even nothing resolved.
     * Feature: add default value if required.
 
 * 2015/11/12 - 0.2.0
-    * Break Change: stop validate "required" property, since json-normalizer is not a validator.
+    * Breaking Change: stop validate "required" property, since json-normalizer is not a validator.
     * Feature: options.ignoreUnknownProperties allow ignore unknown properties.
     * Feature: options.gatheringProperties allow set default gathering name other then "others".
 
 * 2015/10/25 - 0.1.2
-    * Bug fix: convert value to array if primary property's type is array.
+    * Bug Fix: convert value to array if primary property's type is array.
 
 * 2015/09/15 - 0.1.1
-    * Add sync version.
-    * Remove mapper#add() method, use mapper#map() instead.
+    * Feature: Add sync version.
+    * Feature: Remove mapper#add() method, use mapper#map() instead.
 
 ## License
 MIT
