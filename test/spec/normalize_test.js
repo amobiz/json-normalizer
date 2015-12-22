@@ -34,83 +34,79 @@ describe('normalize()', function () {
 		test(null, cases);
 	});
 
-	describe('process only object type at top level', function () {
+	describe('accept all json-schema types', function () {
+		var multi = {
+			type: ['object', 'array', 'string', 'number', 'integer', 'boolean', 'null']
+		};
 		var cases = [{
-			'name': 'not process non-object: array',
-			'value': {
-				'schema': {
-					'type': 'array'
+			name: 'array',
+			value: {
+				schema: {
+					type: 'array'
 				},
-				'value': [1, 3, 4, 5]
+				value: [1, 3, 4, 5]
 			},
-			'expected': [1, 3, 4, 5]
+			expected: [1, 3, 4, 5]
 		}, {
-			'name': 'not process non-object: enum',
-			'value': {
-				'schema': {
-					'enum': ['a', 'b', 'c']
+			name: 'boolean',
+			value: {
+				schema: {
+					type: 'boolean'
 				},
-				'value': 'a'
+				value: true
 			},
-			'expected': 'a'
+			expected: true
 		}, {
-			'name': 'not process non-object: string',
-			'value': {
-				'schema': {
-					'type': 'string'
+			name: 'integer',
+			value: {
+				schema: {
+					type: 'integer'
 				},
-				'value': 'abc'
+				value: 999
 			},
-			'expected': 'abc'
+			expected: 999
 		}, {
-			'name': 'not process non-object: integer',
-			'value': {
-				'schema': {
-					'type': 'integer'
+			name: 'number',
+			value: {
+				schema: {
+					type: 'number'
 				},
-				'value': 999
+				value: 99.99
 			},
-			'expected': 999
+			expected: 99.99
 		}, {
-			'name': 'not process non-object: number',
-			'value': {
-				'schema': {
-					'type': 'integer'
+			name: 'object',
+			value: {
+				schema: {
+					type: 'object'
 				},
-				'value': 99.99
-			},
-			'expected': 99.99
-		}, {
-			'name': 'not process non-object: boolean',
-			'value': {
-				'schema': {
-					'type': 'integer'
-				},
-				'value': true
-			},
-			'expected': true
-		}, {
-			'name': 'not process non-object: multiple types',
-			'value': {
-				'schema': {
-					'type': ['string', 'array', 'number', 'integer', 'boolean', 'null']
-				},
-				'value': [1, 3, 4, 5]
-			},
-			'expected': [1, 3, 4, 5]
-		}, {
-			'name': 'process object if defined in multiple types',
-			'value': {
-				'schema': {
-					'type': ['string', 'array', 'number', 'integer', 'boolean', 'null', 'object']
-				},
-				'value': {
-					'name': 'object'
+				value: {
 				}
 			},
-			'expected': {
-				'name': 'object'
+			expected: {
 			}
+		}, {
+			name: 'string',
+			value: {
+				schema: {
+					type: 'string'
+				},
+				value: 'abc'
+			},
+			expected: 'abc'
+		}, {
+			name: 'multiple types',
+			values: [{
+				schema: multi,
+				value: [1, 3, 4, 5]
+			}, {
+				schema: multi,
+				value: { name: 'object' }
+			}],
+			expected: [
+				[1, 3, 4, 5],
+				{ name: 'object' }
+			]
 		}];
 
 		test(null, cases);
@@ -118,90 +114,90 @@ describe('normalize()', function () {
 
 	describe('features - options', function () {
 		var properties = {
-			'known': {
-				'type': 'string'
+			known: {
+				type: 'string'
 			}
 		};
 		var value = {
-			'known': 'known',
-			'unknown': 'unknown'
+			known: 'known',
+			unknown: 'unknown'
 		};
 		var cases = [{
-			'name': 'additionalProperties takes priority than gathering',
-			'value': {
-				'schema': {
-					'properties': properties,
-					'additionalProperties': true,
-					'gathering': 'rest'
+			name: 'additionalProperties takes priority than gathering',
+			value: {
+				schema: {
+					properties: properties,
+					additionalProperties: true,
+					gathering: 'rest'
 				},
-				'value': value
+				value: value
 			},
-			'expected': {
-				'known': 'known',
-				'unknown': 'unknown'
+			expected: {
+				known: 'known',
+				unknown: 'unknown'
 			}
 		}, {
-			'name': 'gathering takes priority than options.ignoreUnknownProperties',
-			'value': {
-				'schema': {
-					'properties': properties,
-					'gathering': 'rest'
+			name: 'gathering takes priority than options.ignoreUnknownProperties',
+			value: {
+				schema: {
+					properties: properties,
+					gathering: 'rest'
 				},
-				'value': value
+				value: value
 			},
-			'expected': {
-				'known': 'known',
-				'rest': {
-					'unknown': 'unknown'
+			expected: {
+				known: 'known',
+				rest: {
+					unknown: 'unknown'
 				}
 			},
-			'options': {
-				'ignoreUnknownProperties': true
+			options: {
+				ignoreUnknownProperties: true
 			}
 		}, {
-			'name': 'options.ignoreUnknownProperties can ignore unknown properties',
-			'value': {
-				'schema': {
-					'properties': properties
+			name: 'options.ignoreUnknownProperties can ignore unknown properties',
+			value: {
+				schema: {
+					properties: properties
 				},
-				'value': value
+				value: value
 			},
-			'expected': {
-				'known': 'known'
+			expected: {
+				known: 'known'
 			},
-			'options': {
-				'ignoreUnknownProperties': true
+			options: {
+				ignoreUnknownProperties: true
 			}
 		}, {
-			'name': 'no additionalProperties, no gathering, no options.ignoreUnknownProperties, then others',
-			'value': {
-				'schema': {
-					'properties': properties
+			name: 'no additionalProperties, no gathering, no options.ignoreUnknownProperties, then others',
+			value: {
+				schema: {
+					properties: properties
 				},
-				'value': value
+				value: value
 			},
-			'expected': {
-				'known': 'known',
-				'others': {
-					'unknown': 'unknown'
+			expected: {
+				known: 'known',
+				others: {
+					unknown: 'unknown'
 				}
 			}
 		}, {
-			'name': 'others can be renamed by options.gatheringProperties',
-			'value': {
-				'schema': {
-					'properties': properties
+			name: 'others can be renamed by options.gatheringProperties',
+			value: {
+				schema: {
+					properties: properties
 				},
-				'value': value
+				value: value
 			},
-			'expected': {
-				'known': 'known',
+			expected: {
+				known: 'known',
 				'something else': {
-					'unknown': 'unknown'
+					unknown: 'unknown'
 				}
 			},
-			'options': {
-				'gatheringProperties': 'something else'
+			options: {
+				gatheringProperties: 'something else'
 			}
 		}];
 
@@ -210,50 +206,50 @@ describe('normalize()', function () {
 
 	describe('features - defaults', function () {
 		var cases = [{
-			'name': 'add default if required',
-			'value': {
-				'schema': {
-					'properties': {
-						'known': {
-							'type': 'string',
-							'default': 'known'
+			name: 'add default if required',
+			value: {
+				schema: {
+					properties: {
+						known: {
+							type: 'string',
+							default: 'known'
 						}
 					},
-					'required': ['known']
+					required: ['known']
 				},
-				'value': {}
+				value: {}
 			},
-			'expected': {
-				'known': 'known'
+			expected: {
+				known: 'known'
 			}
 		}, {
-			'name': "not add default if default not defined (and hence invalid, but we don't validate that.)",
-			'value': {
-				'schema': {
-					'properties': {
-						'known': {
-							'type': 'string'
+			name: "not add default if default not defined (and hence invalid, but we don't validate that.)",
+			value: {
+				schema: {
+					properties: {
+						known: {
+							type: 'string'
 						}
 					},
-					'required': ['known']
+					required: ['known']
 				},
-				'value': {}
+				value: {}
 			},
-			'expected': {}
+			expected: {}
 		}, {
-			'name': 'not add default if not required',
-			'value': {
-				'schema': {
-					'properties': {
-						'known': {
-							'type': 'string',
-							'default': 'known'
+			name: 'not add default if not required',
+			value: {
+				schema: {
+					properties: {
+						known: {
+							type: 'string',
+							default: 'known'
 						}
 					}
 				},
-				'value': {}
+				value: {}
 			},
-			'expected': {}
+			expected: {}
 		}];
 
 		test(null, cases);
@@ -262,140 +258,141 @@ describe('normalize()', function () {
 	describe('samples', function () {
 		describe('src()', function () {
 			var schema = {
-				'properties': {
-					'globs': {
-						'description': '',
-						'type': 'array',
-						'items': {
-							'type': 'string'
+				type: 'object',
+				properties: {
+					globs: {
+						description: '',
+						alias: ['glob'],
+						type: 'array',
+						items: {
+							type: 'string'
 						},
-						'alias': ['glob'],
-						'samples': ['src', 'src/**/*.{png|jpg}']
+						samples: ['src', 'src/**/*.{png|jpg}']
 					},
-					'options': {
-						'description': '',
-						'type': 'object',
-						'properties': {
-							'base': {
-								'description': '',
-								'type': 'string'
+					options: {
+						description: '',
+						type: 'object',
+						properties: {
+							base: {
+								description: '',
+								type: 'string'
 							},
-							'buffer': {
-								'description': '',
-								'type': 'boolean',
-								'default': true
+							buffer: {
+								description: '',
+								type: 'boolean',
+								default: true
 							},
-							'read': {
-								'description': '',
-								'type': 'boolean',
-								'default': true
+							read: {
+								description: '',
+								type: 'boolean',
+								default: true
 							}
 						}
 					}
 				},
-				'required': ['globs'],
-				'primary': 'globs',
-				'gathering': 'options'
+				required: ['globs'],
+				primary: 'globs',
+				gathering: 'options'
 			};
 
 			var cases = [{
-				'name': 'accepts a simple string and converts to globs array',
-				'value': {
-					'value': 'src'
+				name: 'accepts a simple string and converts to globs array',
+				value: {
+					value: 'src'
 				},
-				'expected': {
-					'globs': ['src']
+				expected: {
+					globs: ['src']
 				}
 			}, {
-				'name': 'accepts a single glob string and converts to globs array',
-				'value': {
-					'value': '**/*.css'
+				name: 'accepts a single glob string and converts to globs array',
+				value: {
+					value: '**/*.css'
 				},
-				'expected': {
-					'globs': ['**/*.css']
+				expected: {
+					globs: ['**/*.css']
 				}
 			}, {
-				'name': 'accepts an array as globs',
-				'value': {
-					'value': ['bootstrap/css/**/*.{css,less}', 'views/**/*.{css,stylus}']
+				name: 'accepts an array as globs',
+				value: {
+					value: ['bootstrap/css/**/*.{css,less}', 'views/**/*.{css,stylus}']
 				},
-				'expected': {
-					'globs': ['bootstrap/css/**/*.{css,less}', 'views/**/*.{css,stylus}']
+				expected: {
+					globs: ['bootstrap/css/**/*.{css,less}', 'views/**/*.{css,stylus}']
 				}
 			}, {
-				'name': 'accepts mixed options and normalizes them as ""options"',
-				'value': {
-					'value': {
-						'globs': ['app/*.css', 'views/**/*.stylus'],
-						'base': '.',
-						'read': false
+				name: 'accepts mixed options and normalizes them as ""options"',
+				value: {
+					value: {
+						globs: ['app/*.css', 'views/**/*.stylus'],
+						base: '.',
+						read: false
 					}
 				},
-				'expected': {
-					'globs': ['app/*.css', 'views/**/*.stylus'],
-					'options': {
-						'base': '.',
-						'read': false
-					}
-				}
-			}, {
-				'name': 'accepts alternative property name "glob" and normalizes it as "globs"',
-				'value': {
-					'value': {
-						'glob': ['app/*.css', 'views/**/*.stylus'],
-						'base': '.',
-						'read': false
-					}
-				},
-				'expected': {
-					'globs': ['app/*.css', 'views/**/*.stylus'],
-					'options': {
-						'base': '.',
-						'read': false
+				expected: {
+					globs: ['app/*.css', 'views/**/*.stylus'],
+					options: {
+						base: '.',
+						read: false
 					}
 				}
 			}, {
-				'name': 'accepts unrecognized properties and put them to "options" or "others"',
-				'value': {
-					'value': {
-						'glob': ['app/*.css', 'views/**/*.stylus'],
-						'base': '.',
-						'cwd': '.',
-						'options': {
-							'mode': '0777',
-							'buffer': false,
-							'read': false
+				name: 'accepts alternative property name "glob" and normalizes it as "globs"',
+				value: {
+					value: {
+						glob: ['app/*.css', 'views/**/*.stylus'],
+						base: '.',
+						read: false
+					}
+				},
+				expected: {
+					globs: ['app/*.css', 'views/**/*.stylus'],
+					options: {
+						base: '.',
+						read: false
+					}
+				}
+			}, {
+				name: 'accepts unrecognized properties and put them to "options" or "others"',
+				value: {
+					value: {
+						glob: ['app/*.css', 'views/**/*.stylus'],
+						base: '.',
+						cwd: '.',
+						options: {
+							mode: '0777',
+							buffer: false,
+							read: false
 						}
 					}
 				},
-				'expected': {
-					'globs': ['app/*.css', 'views/**/*.stylus'],
-					'options': {
-						'base': '.',
-						'buffer': false,
-						'read': false,
-						'cwd': '.',
-						'others': {
-							'mode': '0777'
+				expected: {
+					globs: ['app/*.css', 'views/**/*.stylus'],
+					options: {
+						base: '.',
+						buffer: false,
+						read: false,
+						cwd: '.',
+						others: {
+							mode: '0777'
 						}
 					}
 				}
 			}, {
-				'name': 'accepts normalized form',
-				'value': {
-					'value': {
-						'glob': ['app/*.css', 'views/**/*.stylus'],
-						'options': {
-							'base': '.',
-							'read': false
+				name: 'accepts normalized form',
+				value: {
+					value: {
+						glob: ['app/*.css', 'views/**/*.stylus'],
+						options: {
+							base: '.',
+							read: false
 						}
 					}
 				},
-				'expected': {
-					'globs': ['app/*.css', 'views/**/*.stylus'],
-					'options': {
-						'base': '.',
-						'read': false
+				expected: {
+					globs: ['app/*.css', 'views/**/*.stylus'],
+					options: {
+						base: '.',
+						read: false
 					}
 				}
 			}];
@@ -405,95 +402,96 @@ describe('normalize()', function () {
 
 		describe('dest()', function () {
 			var schema = {
-				'properties': {
-					'path': {
-						'description': '',
-						'type': 'string'
+				type: 'object',
+				properties: {
+					path: {
+						description: '',
+						type: 'string'
 					},
-					'options': {
-						'description': '',
-						'type': 'object',
-						'properties': {
-							'cwd': {
-								'description': '',
-								'type': 'string'
+					options: {
+						description: '',
+						type: 'object',
+						properties: {
+							cwd: {
+								description: '',
+								type: 'string'
 							},
-							'mode': {
-								'description': '',
-								'type': 'string'
+							mode: {
+								description: '',
+								type: 'string'
 							}
 						}
 					}
 				},
-				'required': ['path'],
-				'primary': 'path',
-				'gathering': 'options'
+				required: ['path'],
+				primary: 'path',
+				gathering: 'options'
 			};
 
 			var cases = [{
-				'name': 'accepts a simple string and converts to the primary property "path"',
-				'value': {
-					'value': 'dist'
+				name: 'accepts a simple string and converts to the primary property "path"',
+				value: {
+					value: 'dist'
 				},
-				'expected': {
-					'path': 'dist'
+				expected: {
+					path: 'dist'
 				}
 			}, {
-				'name': 'accepts a mixed options and normalizes them as "options"',
-				'value': {
-					'value': {
-						'path': 'dist/css',
-						'cwd': '.',
-						'mode': '0777'
+				name: 'accepts a mixed options and normalizes them as "options"',
+				value: {
+					value: {
+						path: 'dist/css',
+						cwd: '.',
+						mode: '0777'
 					}
 				},
-				'expected': {
-					'path': 'dist/css',
-					'options': {
-						'cwd': '.',
-						'mode': '0777'
-					}
-				}
-			}, {
-				'name': 'accepts unrecognized properties and put them to "options" or "others"',
-				'value': {
-					'value': {
-						'path': 'dist',
-						'read': false,
-						'options': {
-							'cwd': '.',
-							'mode': '0777',
-							'buffer': false
-						}
-					}
-				},
-				'expected': {
-					'path': 'dist',
-					'options': {
-						'cwd': '.',
-						'mode': '0777',
-						'read': false,
-						'others': {
-							'buffer': false
-						}
+				expected: {
+					path: 'dist/css',
+					options: {
+						cwd: '.',
+						mode: '0777'
 					}
 				}
 			}, {
-				'name': 'accepts normalized form',
-				'value': {
-					'value': {
-						'path': 'dist',
-						'options': {
-							'cwd': '.',
-							'mode': '0777'
+				name: 'accepts unrecognized properties and put them to "options" or "others"',
+				value: {
+					value: {
+						path: 'dist',
+						read: false,
+						options: {
+							cwd: '.',
+							mode: '0777',
+							buffer: false
 						}
 					}
 				},
-				'expected': {
-					'path': 'dist',
-					'options': {
-						'cwd': '.',
-						'mode': '0777'
+				expected: {
+					path: 'dist',
+					options: {
+						cwd: '.',
+						mode: '0777',
+						read: false,
+						others: {
+							buffer: false
+						}
+					}
+				}
+			}, {
+				name: 'accepts normalized form',
+				value: {
+					value: {
+						path: 'dist',
+						options: {
+							cwd: '.',
+							mode: '0777'
+						}
+					}
+				},
+				expected: {
+					path: 'dist',
+					options: {
+						cwd: '.',
+						mode: '0777'
 					}
 				}
 			}];
@@ -503,241 +501,275 @@ describe('normalize()', function () {
 
 		describe('browserify', function () {
 			var schema = {
-				'definitions': {
-					'io': {
-						'properties': {
-							'src': {
-								'description': '',
-								'type': 'array'
+				definitions: {
+					io: {
+						properties: {
+							src: {
+								description: '',
+								type: 'array'
 							},
-							'dest': {
-								'description': '',
-								'type': 'string'
+							dest: {
+								description: '',
+								type: 'string'
 							}
 						}
 					},
-					'options': {
-						'properties': {
-							'extensions': {
-								'description': '',
-								'type': 'array',
-								'alias': ['extension']
-							},
-							'require': {
-								'description': '',
-								'type': 'array',
-								'alias': ['requires']
-							},
-							'external': {
-								'description': '',
-								'type': 'array',
-								'alias': ['externals']
-							},
-							'plugin': {
-								'description': '',
-								'type': 'array',
-								'alias': ['plugins']
-							},
-							'transform': {
-								'description': '',
-								'type': 'array',
-								'alias': ['transforms']
-							},
-							'exclude': {
-								'description': '',
-								'type': 'array',
-								'alias': ['excludes']
-							},
-							'ignore': {
-								'description': '',
-								'type': 'array',
-								'alias': ['ignores']
-							},
-							'shim': {
-								'description': '',
-								'type': 'array',
-								'alias': ['shims', 'browserify-shim', 'browserify-shims']
-							}
-						}
-					}
-				},
-				'extends': {
-					'$ref': '#/definitions/io'
-				},
-				'properties': {
-					'options': {
-						'description': 'common options for all bundles',
-						'extends': {
-							'$ref': '#/definitions/options'
-						},
-						'type': 'object'
-					},
-					'bundles': {
-						'description': '',
-						'alias': ['bundle'],
-						'type': 'array',
-						'extends': [{
-							'$ref': '#/definitions/io'
-						}, {
-							'$ref': '#/definitions/options'
-						}],
-						'properties': {
-							'file': {
-								'description': '',
-								'type': 'string'
-							},
-							'entries': {
-								'description': '',
-								'alias': ['entry'],
-								'type': 'array'
-							},
-							'options': {
-								'extends': {
-									'$ref': '#/definitions/options'
+					options: {
+						properties: {
+							extensions: {
+								description: '',
+								alias: ['extension'],
+								type: 'array',
+								items: {
+									type: 'string'
 								}
+							},
+							require: {
+								description: '',
+								alias: ['requires'],
+								type: 'array',
+								items: {
+									type: 'string'
+								}
+							},
+							external: {
+								description: '',
+								alias: ['externals'],
+								type: 'array',
+								items: {
+									type: 'string'
+								}
+							},
+							plugin: {
+								description: '',
+								alias: ['plugins'],
+								type: 'array',
+								items: {
+									type: 'string'
+								}
+							},
+							transform: {
+								description: '',
+								alias: ['transforms'],
+								type: 'array',
+								items: {
+									type: 'string'
+								}
+							},
+							exclude: {
+								description: '',
+								alias: ['excludes'],
+								type: 'array',
+								items: {
+									type: 'string'
+								}
+							},
+							ignore: {
+								description: '',
+								alias: ['ignores'],
+								type: 'array',
+								items: {
+									type: 'string'
+								}
+							},
+							shim: {
+								description: 'which library to shim?',
+								alias: ['shims', 'browserify-shim', 'browserify-shims'],
+								type: 'array',
+								items: {
+									type: 'string'
+								}
+							},
+							sourcemap: {
+								description: 'generate sourcemap file or not?',
+								alias: ['sourcemaps'],
+								enum: [
+									'inline', 'external', false
+								],
+								default: false
 							}
-						},
-						'required': ['file', 'entries']
+						}
 					}
 				},
-				'required': ['bundles'],
-				'default': {
-					'options': {}
-				}
+				extends: {
+					$ref: '#/definitions/io'
+				},
+				properties: {
+					options: {
+						description: 'common options for all bundles',
+						type: 'object',
+						extends: {
+							$ref: '#/definitions/options'
+						}
+					},
+					bundles: {
+						description: '',
+						alias: ['bundle'],
+						type: 'array',
+						items: {
+							type: 'object',
+							extends: {
+								$ref: '#/definitions/options'
+							},
+							properties: {
+								file: {
+									description: '',
+									type: 'string'
+								},
+								entries: {
+									description: '',
+									alias: ['entry'],
+									type: 'array',
+									items: {
+										type: 'string'
+									}
+								},
+								options: {
+									description: 'options for this bundle',
+									extends: {
+										$ref: '#/definitions/options'
+									}
+								}
+							},
+							required: ['file', 'entries']
+						}
+					}
+				},
+				required: ['bundles']
 			};
 
 			var options = {
-				'extensions': ['.js', '.json', '.jsx', '.es6', '.ts'],
-				'plugin': ['tsify'],
-				'transform': ['brfs']
+				extensions: ['.js', '.json', '.jsx', '.es6', '.ts'],
+				plugin: ['tsify'],
+				transform: ['brfs']
 			};
 
 			var cases = [{
-				'name': 'accepts single bundle',
-				'value': {
-					'value': {
-						'bundle': {
-							'file': 'index.js',
-							'entry': 'index.js'
+				name: 'accepts single bundle',
+				value: {
+					value: {
+						bundle: {
+							file: 'index.js',
+							entry: 'index.js'
 						}
 					}
 				},
-				'expected': {
-					'bundles': [{
-						'file': 'index.js',
-						'entries': ['index.js']
+				expected: {
+					bundles: [{
+						file: 'index.js',
+						entries: ['index.js']
 					}]
 				}
 			}, {
-				'name': 'accepts single bundle in bundles array',
-				'value': {
-					'value': {
-						'bundles': [{
-							'file': 'index.js',
-							'entry': 'index.js'
+				name: 'accepts single bundle in bundles array',
+				value: {
+					value: {
+						bundles: [{
+							file: 'index.js',
+							entry: 'index.js'
 						}]
 					}
 				},
-				'expected': {
-					'bundles': [{
-						'file': 'index.js',
-						'entries': ['index.js']
+				expected: {
+					bundles: [{
+						file: 'index.js',
+						entries: ['index.js']
 					}]
 				}
 			}, {
-				'name': 'accepts bundles with common options',
-				'value': {
-					'value': {
-						'options': {
-							'require': 'angular2/angular2'
+				name: 'accepts bundles with common options',
+				value: {
+					value: {
+						options: {
+							require: 'angular2/angular2'
 						},
-						'bundles': [{
-							'file': 'index.js',
-							'entry': 'index.js'
+						bundles: [{
+							file: 'index.js',
+							entry: 'index.js'
 						}]
 					}
 				},
-				'expected': {
-					'options': {
-						'require': ['angular2/angular2']
+				expected: {
+					options: {
+						require: ['angular2/angular2']
 					},
-					'bundles': [{
-						'file': 'index.js',
-						'entries': ['index.js']
+					bundles: [{
+						file: 'index.js',
+						entries: ['index.js']
 					}]
 				}
 			}, {
-				'name': 'accepts real life angular2 example',
-				'value': {
-					'value': {
-						'bundles': [{
-							'file': 'deps.js',
-							'entries': [{
-								'file': 'traceur/bin/traceur-runtime'
+				name: 'accepts real life angular2 example',
+				value: {
+					value: {
+						bundles: [{
+							file: 'deps.js',
+							entries: [{
+								file: 'traceur/bin/traceur-runtime'
 							}, {
-								'file': 'rtts_assert/rtts_assert'
+								file: 'rtts_assert/rtts_assert'
 							}, {
-								'file': 'reflect-propertydata'
+								file: 'reflect-propertydata'
 							}, {
-								'file': 'zone.js'
+								file: 'zone.js'
 							}],
-							'require': ['angular2/angular2', 'angular2/router']
+							require: ['angular2/angular2', 'angular2/router']
 						}, {
-							'file': 'services.js',
-							'entry': 'services/*/index.js',
-							'external': ['angular2/angular2', 'angular2/router'],
-							'options': options
+							file: 'services.js',
+							entry: 'services/*/index.js',
+							external: ['angular2/angular2', 'angular2/router'],
+							options: options
 						}, {
-							'file': 'index.js',
-							'entry': 'index.js',
-							'external': './services',
-							'options': options
+							file: 'index.js',
+							entry: 'index.js',
+							external: './services',
+							options: options
 						}, {
-							'file': 'auth.js',
-							'entry': 'auth/index.js',
-							'external': './services',
-							'options': options
+							file: 'auth.js',
+							entry: 'auth/index.js',
+							external: './services',
+							options: options
 						}, {
-							'file': 'dashboard.js',
-							'entry': 'dashboard/index.js',
-							'external': './services',
-							'options': options
+							file: 'dashboard.js',
+							entry: 'dashboard/index.js',
+							external: './services',
+							options: options
 						}]
 					}
 				},
-				'expected': {
-					'bundles': [{
-						'file': 'deps.js',
-						'entries': [{
-							'file': 'traceur/bin/traceur-runtime'
+				expected: {
+					bundles: [{
+						file: 'deps.js',
+						entries: [{
+							file: 'traceur/bin/traceur-runtime'
 						}, {
-							'file': 'rtts_assert/rtts_assert'
+							file: 'rtts_assert/rtts_assert'
 						}, {
-							'file': 'reflect-propertydata'
+							file: 'reflect-propertydata'
 						}, {
-							'file': 'zone.js'
+							file: 'zone.js'
 						}],
-						'require': ['angular2/angular2', 'angular2/router']
+						require: ['angular2/angular2', 'angular2/router']
 					}, {
-						'file': 'services.js',
-						'entries': ['services/*/index.js'],
-						'external': ['angular2/angular2', 'angular2/router'],
-						'options': options
+						file: 'services.js',
+						entries: ['services/*/index.js'],
+						external: ['angular2/angular2', 'angular2/router'],
+						options: options
 					}, {
-						'file': 'index.js',
-						'entries': ['index.js'],
-						'external': ['./services'],
-						'options': options
+						file: 'index.js',
+						entries: ['index.js'],
+						external: ['./services'],
+						options: options
 					}, {
-						'file': 'auth.js',
-						'entries': ['auth/index.js'],
-						'external': ['./services'],
-						'options': options
+						file: 'auth.js',
+						entries: ['auth/index.js'],
+						external: ['./services'],
+						options: options
 					}, {
-						'file': 'dashboard.js',
-						'entries': ['dashboard/index.js'],
-						'external': ['./services'],
-						'options': options
+						file: 'dashboard.js',
+						entries: ['dashboard/index.js'],
+						external: ['./services'],
+						options: options
 					}]
 				}
 			}];
