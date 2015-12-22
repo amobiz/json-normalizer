@@ -3,7 +3,9 @@
 var fs = require('fs');
 var mochaCases = require('mocha-cases');
 
-var normalize = require('../../src/normalize');
+var base = process.cwd();
+var normalize = require(base + '/lib/normalize');
+var mapper = require(base + '/lib/loader/mapper');
 
 describe('normalize()', function () {
 	describe('self-certification', function () {
@@ -25,9 +27,7 @@ describe('normalize()', function () {
 			},
 			expected: normalizable,
 			options: {
-				loader: require('../../src/loader/mapper')({
-					'http://json-schema.org/draft-04/schema#': schema
-				})
+				loader: mapper({ 'http://json-schema.org/draft-04/schema#': schema })
 			}
 		}];
 

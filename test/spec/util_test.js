@@ -1,7 +1,9 @@
 'use strict';
 
 var assert = require('assert');
-var util = require('../../src/lib/util');
+
+var base = process.cwd();
+var util = require(base + '/lib/util');
 
 var iterate = util.iterate;
 var traverse = util.traverse;
