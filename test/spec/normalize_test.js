@@ -34,9 +34,12 @@ describe('normalize()', function () {
 		test(null, cases);
 	});
 
-	describe('process only array and object type at top level', function () {
+	describe('accept all json-schema types', function () {
+		var multi = {
+			type: ['object', 'array', 'string', 'number', 'integer', 'boolean', 'null']
+		};
 		var cases = [{
-			name: 'not process non-object: array',
+			name: 'array',
 			value: {
 				schema: {
 					type: 'array'
@@ -45,25 +48,16 @@ describe('normalize()', function () {
 			},
 			expected: [1, 3, 4, 5]
 		}, {
-			name: 'not process non-object: enum',
+			name: 'boolean',
 			value: {
 				schema: {
-					enum: ['a', 'b', 'c']
+					type: 'boolean'
 				},
-				value: 'a'
+				value: true
 			},
-			expected: 'a'
+			expected: true
 		}, {
-			name: 'not process non-object: string',
-			value: {
-				schema: {
-					type: 'string'
-				},
-				value: 'abc'
-			},
-			expected: 'abc'
-		}, {
-			name: 'not process non-object: integer',
+			name: 'integer',
 			value: {
 				schema: {
 					type: 'integer'
@@ -72,45 +66,47 @@ describe('normalize()', function () {
 			},
 			expected: 999
 		}, {
-			name: 'not process non-object: number',
+			name: 'number',
 			value: {
 				schema: {
-					type: 'integer'
+					type: 'number'
 				},
 				value: 99.99
 			},
 			expected: 99.99
 		}, {
-			name: 'not process non-object: boolean',
+			name: 'object',
 			value: {
 				schema: {
-					type: 'integer'
-				},
-				value: true
-			},
-			expected: true
-		}, {
-			name: 'not process non-object: multiple types',
-			value: {
-				schema: {
-					type: ['object', 'array', 'string', 'number', 'integer', 'boolean', 'null']
-				},
-				value: [1, 3, 4, 5]
-			},
-			expected: [1, 3, 4, 5]
-		}, {
-			name: 'process object even in multiple types',
-			value: {
-				schema: {
-					type: ['object', 'array', 'string', 'number', 'integer', 'boolean', 'null']
+					type: 'object'
 				},
 				value: {
-					name: 'object'
 				}
 			},
 			expected: {
-				name: 'object'
 			}
+		}, {
+			name: 'string',
+			value: {
+				schema: {
+					type: 'string'
+				},
+				value: 'abc'
+			},
+			expected: 'abc'
+		}, {
+			name: 'multiple types',
+			values: [{
+				schema: multi,
+				value: [1, 3, 4, 5]
+			}, {
+				schema: multi,
+				value: { name: 'object' }
+			}],
+			expected: [
+				[1, 3, 4, 5],
+				{ name: 'object' }
+			]
 		}];
 
 		test(null, cases);
