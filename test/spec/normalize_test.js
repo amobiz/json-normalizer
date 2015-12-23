@@ -626,6 +626,7 @@ describe('normalize()', function () {
 								},
 								options: {
 									description: 'options for this bundle',
+									type: 'object',
 									extends: {
 										$ref: '#/definitions/options'
 									}
