@@ -380,6 +380,9 @@ $ npm test
 
 
 ## Change Logs
+* 2015/12/24 - 0.3.1
+    * NPM: Update npm settings.
+
 * 2015/12/23 - 0.3.0
     * Breaking Change: Sync version now returns normalized JSON value object directly since it never returns error.
     * Feature: Process `items` property of schema that are `array` types.
