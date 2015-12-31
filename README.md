@@ -379,6 +379,11 @@ $ npm test
 ```
 
 ## Change Logs
+* 2016/01/01 - 0.3.3
+
+    * Bug Fix: when "additionalProperties" set to false, should ignore all unknown properties.
+    * Feature: Add "patternProperties" support.
+
 * 2015/12/26 - 0.3.2
 
     * Bug Fix: Respect schema and options settings (e.g. options.ignoreUnknownProperties): returning what ever normalized rather.
