@@ -268,6 +268,59 @@ describe('normalize()', function () {
 		test(null, cases);
 	});
 
+	describe('feature - patternProperties', function () {
+		var cases = [{
+			name: 'should match regular expression',
+			value: {
+				schema: {
+					patternProperties: {
+						'^test.+$': {
+							type: 'string'
+						}
+					},
+					additionalProperties: false
+				},
+				value: {
+					testPattern: 'this pattern should match',
+					test: 'this pattern should not match'
+				}
+			},
+			expected: {
+				testPattern: 'this pattern should match'
+			}
+		}, {
+			name: 'should nesting process into patternProperties',
+			value: {
+				schema: {
+					patternProperties: {
+						'^test.+$': {
+							type: 'object',
+							properties: {
+								name: {
+									type: 'string'
+								}
+							},
+							additionalProperties: false
+						}
+					}
+				},
+				value: {
+					testPattern: {
+						name: 'the name property of a patternProperty',
+						unknown: 'unknown property'
+					}
+				}
+			},
+			expected: {
+				testPattern: {
+					name: 'the name property of a patternProperty'
+				}
+			}
+		}];
+
+		test(null, cases);
+	});
+
 	describe('samples', function () {
 		describe('src()', function () {
 			var schema = {
