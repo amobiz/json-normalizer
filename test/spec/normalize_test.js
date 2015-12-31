@@ -137,6 +137,19 @@ describe('normalize()', function () {
 				unknown: 'unknown'
 			}
 		}, {
+			name: 'when additionalProperties: false, should ignore all unknown properties',
+			value: {
+				schema: {
+					properties: properties,
+					additionalProperties: false,
+					gathering: 'rest'
+				},
+				value: value
+			},
+			expected: {
+				known: 'known'
+			}
+		}, {
 			name: 'gathering takes priority than options.ignoreUnknownProperties',
 			value: {
 				schema: {
