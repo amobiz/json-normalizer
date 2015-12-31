@@ -378,7 +378,6 @@ Tests are written in mocha. Run tests in terminal:
 $ npm test
 ```
 
-
 ## Change Logs
 * 2015/12/26 - 0.3.2
 
@@ -417,6 +416,10 @@ $ npm test
 
     * Feature: Add sync version.
     * Feature: Remove mapper#add() method, use mapper#map() instead.
+
+## Related
+
+* [json-regulator](https://www.npmjs.com/package/json-regulator)
 
 ## License
 MIT
