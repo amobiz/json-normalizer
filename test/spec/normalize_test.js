@@ -112,7 +112,7 @@ describe('normalize()', function () {
 		test(null, cases);
 	});
 
-	describe('features - options', function () {
+	describe('feature - options', function () {
 		var properties = {
 			known: {
 				type: 'string'
@@ -204,7 +204,7 @@ describe('normalize()', function () {
 		test(null, cases);
 	});
 
-	describe('features - defaults', function () {
+	describe('feature - defaults', function () {
 		var cases = [{
 			name: 'add default if required',
 			value: {
