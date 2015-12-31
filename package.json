@@ -11,31 +11,31 @@
     "url": "git+https://github.com/amobiz/json-normalizer.git"
   },
   "keywords": [
-	"alias",
-	"default",
-	"defaults",
-	"default value",
-	"default values",
-	"convert",
-	"conversion",
+    "alias",
+    "default",
+    "defaults",
+    "default value",
+    "default values",
+    "convert",
+    "conversion",
     "normalize",
     "normalizer",
-	"manipulate",
-	"manipulation",
-	"property",
-	"properties",
-	"key",
-	"keys",
-	"type",
-	"types",
+    "manipulate",
+    "manipulation",
+    "property",
+    "properties",
+    "key",
+    "keys",
+    "type",
+    "types",
     "json",
     "json-schema",
     "schema",
-	"sync",
-	"extend",
-	"extends",
-	"extension",
-	"async"
+    "sync",
+    "extend",
+    "extends",
+    "extension",
+    "async"
   ],
   "author": "Amobiz",
   "license": "MIT",
@@ -48,6 +48,8 @@
     "mocha-cases": "^0.1.5"
   },
   "dependencies": {
-    "lodash": "^3.10.1"
+    "json-regulator": "^0.1.10",
+    "lodash": "^3.10.1",
+    "mocha-cases": "^0.1.6"
   }
 }
