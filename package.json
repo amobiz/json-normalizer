@@ -52,7 +52,6 @@
     "mocha-cases": "^0.1.5"
   },
   "dependencies": {
-    "json-regulator": "^0.1.14",
     "lodash": "^3.10.1",
     "mocha-cases": "^0.1.6"
   }
