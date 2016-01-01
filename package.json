@@ -22,12 +22,12 @@
     "normalizer",
     "manipulate",
     "manipulation",
-	"pattern",
-	"patternProperties",
+    "pattern",
+    "patternProperties",
     "property",
     "properties",
-	"regular expression",
-	"regex",
+    "regular expression",
+    "regex",
     "key",
     "keys",
     "type",
@@ -52,7 +52,7 @@
     "mocha-cases": "^0.1.5"
   },
   "dependencies": {
-    "json-regulator": "^0.1.10",
+    "json-regulator": "^0.1.14",
     "lodash": "^3.10.1",
     "mocha-cases": "^0.1.6"
   }
