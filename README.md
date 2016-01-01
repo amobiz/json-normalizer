@@ -424,7 +424,7 @@ $ npm test
 
 ## Related
 
-* [json-regulator](https://www.npmjs.com/package/json-regulator)
+* [json-regulator](https://github.com/amobiz/json-regulator)
 
 ## License
 MIT
