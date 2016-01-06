@@ -53,6 +53,6 @@
   },
   "dependencies": {
     "lodash": "^3.10.1",
-    "mocha-cases": "^0.1.6"
+    "mocha-cases": "^0.1.7"
   }
 }
