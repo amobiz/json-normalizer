@@ -860,16 +860,8 @@ function test(schema, cases) {
 		prefix: 'sync: '
 	});
 
-	function async(values, optionalOptions) {
-		return new Promise(function (resolve, reject) {
-			normalize(values.schema || schema, values.value, optionalOptions || {}, function (err, actual) {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(actual);
-				}
-			});
-		});
+	function async(values, options, done) {
+		normalize(values.schema || schema, values.value, options || {}, done);
 	}
 
 	function sync(values, optionalOptions) {
