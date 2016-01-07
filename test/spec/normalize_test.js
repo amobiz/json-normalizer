@@ -854,7 +854,7 @@ function json(file) {
 function test(schema, cases) {
 	mochaCases(cases, async, {
 		prefix: 'async: ',
-		async: true
+		errback: true
 	});
 	mochaCases(cases, sync, {
 		prefix: 'sync: '

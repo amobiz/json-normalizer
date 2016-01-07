@@ -3,12 +3,12 @@
   "version": "0.3.3",
   "description": "Normalize a json object to meets a json-schema using extended schema descriptor.",
   "main": "index.js",
-  "scripts": {
-    "test": "mocha --recursive test/spec"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/amobiz/json-normalizer.git"
+  },
+  "scripts": {
+    "test": "mocha --recursive test/spec"
   },
   "keywords": [
     "alias",
@@ -53,6 +53,6 @@
   },
   "dependencies": {
     "lodash": "^3.10.1",
-    "mocha-cases": "^0.1.7"
+    "mocha-cases": "^0.1.10"
   }
 }
