@@ -379,6 +379,10 @@ $ npm test
 ```
 
 ## Change Logs
+* 2016/01/13 - 0.3.4
+
+    * NPM: Upgrade lodash to 4.0.0.
+
 * 2016/01/01 - 0.3.3
 
     * Bug Fix: when "additionalProperties" set to false, should ignore all unknown properties.
