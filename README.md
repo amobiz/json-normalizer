@@ -72,6 +72,13 @@ Optional. A loader or an array of loaders that help loading remote schemas. Load
 Optional. Allow ignore unknown properties.
 ###### `options.gatheringProperties`
 Optional. Change default gathering name. Default was "`others`".
+###### `options.before`
+Optional. A hook function with signature `function (schema, value): function` that invoked before processing a value using the given schema.
+The hook function either returns falsy to instruct the normalizer to continue its job; or returns a function that returns the resolved value to stop further processing.
+###### `options.after`
+Optional. A hook function with signature `function (schema, resolved): function` that invoked after processing a value using the given schema.
+The `resolved` parameter is a function that returns the value resolved by the normalizer; or `undefined` if nothing resolved by the normalizer.
+The hook function must either returns a function that returns the value resolved by the hook function; or returns the `resolved` value passed to it.
 #### `callback`
 The callback function with `function(err, result)` signature that the normalizer delivers the normalized JSON value object to. Called with null context.
 #### Returns
@@ -379,13 +386,17 @@ $ npm test
 ```
 
 ## Change Logs
+* 2016/01/24 - 0.3.5
+
+    * Feature: add `before` and `after` hook.
+
 * 2016/01/13 - 0.3.4
 
     * NPM: Upgrade lodash to 4.0.0.
 
 * 2016/01/01 - 0.3.3
 
-    * Bug Fix: when "additionalProperties" set to false, should ignore all unknown properties.
+    * Bug Fix: When "additionalProperties" set to false, should ignore all unknown properties.
     * Feature: Add "patternProperties" support.
 
 * 2015/12/26 - 0.3.2

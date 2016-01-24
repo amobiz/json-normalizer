@@ -1,6 +1,6 @@
 {
   "name": "json-normalizer",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Normalize a json object to meets a json-schema using extended schema descriptor.",
   "main": "index.js",
   "repository": {
