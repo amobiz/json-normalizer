@@ -273,7 +273,7 @@ With the schema:
 {
     "properties": {
         "src": {
-            "type": "string | array"
+            "type": ["string", "array"]
         },
         "options": {
             "properties": {
