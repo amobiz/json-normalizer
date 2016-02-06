@@ -1,4 +1,5 @@
 # json-normalizer
+
 Normalize a json object to meets a json-schema using extended schema descriptor.
 
 [![MIT](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/amobiz/json-normalizer/blob/master/LICENSE) [![npm version](https://badge.fury.io/js/json-normalizer.svg)](http://badge.fury.io/js/json-normalizer) [![David Dependency Badge](https://david-dm.org/amobiz/json-normalizer.svg)](https://david-dm.org/amobiz/json-normalizer)
@@ -9,8 +10,8 @@ Normalize a json object to meets a json-schema using extended schema descriptor.
 Note: Json-normalizer is not a [json-schema](http://json-schema.org/) validator. If you are looking for json-schema validators,
 please check out here: [json-schema validators](https://www.npmjs.com/search?q=json-schema+validator).
 
-
 #### Contents
+
 * [Overview](#overview)
     * [The Problems](#the-problems)
     * [The Solution](#the-solution)
@@ -40,6 +41,7 @@ You want:
 * Maximum reuse of schemas, i.e., you want multiple inheritance.
 
 ### The Solution
+
 The normalizer is based on json-schema with the "[normalizable](https://raw.githubusercontent.com/amobiz/json-normalizer/master/test/spec/schema/normalizable#)" extension:
 
 1. Properties can have alias and being normalized, using the "`alias`" keyword.
@@ -50,6 +52,7 @@ The normalizer is based on json-schema with the "[normalizable](https://raw.gith
 5. Allow schema extends other schemas, using the "`extends`" keyword.
 
 ## Install
+
 ``` bash
 $ npm install json-normalizer
 ```
@@ -232,6 +235,7 @@ catch (err) {
 ```
 
 ### Write Your Own Loader
+
 *  Async loaders are functions with `function(rootSchema, $ref, callback(err, schema))` signature.
 *  Async loaders must return truthy if it can handle the given reference `$ref`, and the callback be called later when the schema is ready. However, if error occurred, e.g., network failure, the callback be called with the `err` set to the type of error and the second argument provides details of that error.
 *  Async loaders must return falsy if it can not handle the given reference `$ref`, and the `callback` should not be called at all.
@@ -327,6 +331,7 @@ to:
 ```
 
 ### Extending Schema
+
 ``` json
 {
     "definitions": {
@@ -370,6 +375,7 @@ to:
 Please refer to test for more examples.
 
 ## Build and Contribute
+
 ``` bash
 $ git clone https://github.com/amobiz/json-normalizer.git
 $ cd json-normalizer
@@ -377,72 +383,29 @@ $ npm install
 ```
 
 ## Issues
-[Iessues](https://github.com/amobiz/json-normalizer/issues)
+
+[Issues](https://github.com/amobiz/json-normalizer/issues)
 
 ## Test
-Tests are written in mocha. Run tests in terminal:
+
+Tests are written in [mocha](https://mochajs.org/). Run tests in terminal:
+
 ``` bash
 $ npm test
 ```
 
-## Change Logs
-* 2016/01/24 - 0.3.5
+## Changelog
 
-    * Feature: add `before` and `after` hook.
-
-* 2016/01/13 - 0.3.4
-
-    * NPM: Upgrade lodash to 4.0.0.
-
-* 2016/01/01 - 0.3.3
-
-    * Bug Fix: When "additionalProperties" set to false, should ignore all unknown properties.
-    * Feature: Add "patternProperties" support.
-
-* 2015/12/26 - 0.3.2
-
-    * Bug Fix: Respect schema and options settings (e.g. options.ignoreUnknownProperties): returning what ever normalized rather.
-
-* 2015/12/24 - 0.3.1
-
-    * NPM: Update npm settings.
-
-* 2015/12/23 - 0.3.0
-
-    * Breaking Change: Sync version now returns normalized JSON value object directly since it never returns error.
-    * Feature: Process `items` property of schema that are `array` types.
-
-* 2015/11/24 - 0.2.2
-
-    * Misc: Extract test framework to [mocha-cases](https://github.com/amobiz/mocha-cases) project.
-
-* 2015/11/20 - 0.2.1
-
-    * Feature: Process only object type at top level [deprecated in 0.3.0].
-    * Feature: Always return an object even nothing resolved.
-    * Feature: Add default value if required.
-
-* 2015/11/12 - 0.2.0
-
-    * Breaking Change: stop validate "required" property, since json-normalizer is not a validator.
-    * Feature: options.ignoreUnknownProperties allow ignore unknown properties.
-    * Feature: options.gatheringProperties allow set default gathering name other then "others".
-
-* 2015/10/25 - 0.1.2
-
-    * Bug Fix: Convert value to array if primary property's type is array.
-
-* 2015/09/15 - 0.1.1
-
-    * Feature: Add sync version.
-    * Feature: Remove mapper#add() method, use mapper#map() instead.
+[Changelog](./CHANGELOG.md)
 
 ## Related
 
 * [json-regulator](https://github.com/amobiz/json-regulator)
 
 ## License
-MIT
+
+[MIT](http://opensource.org/licenses/MIT)
 
 ## Author
+
 [Amobiz](https://github.com/amobiz)
