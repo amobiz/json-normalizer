@@ -3,6 +3,7 @@
 Normalize a json object to meets a json-schema using extended schema descriptor.
 
 [![MIT](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/amobiz/json-normalizer/blob/master/LICENSE) [![npm version](https://badge.fury.io/js/json-normalizer.svg)](http://badge.fury.io/js/json-normalizer) [![David Dependency Badge](https://david-dm.org/amobiz/json-normalizer.svg)](https://david-dm.org/amobiz/json-normalizer)
+[![Build Status](https://travis-ci.org/amobiz/json-normalizer.svg?branch=master)](https://travis-ci.org/amobiz/json-normalizer)
 
 [![NPM](https://nodei.co/npm/json-normalizer.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/json-normalizer.png?downloads=true&downloadRank=true&stars=true) [![NPM](https://nodei.co/npm-dl/json-normalizer.png?months=6&height=3)](https://nodei.co/npm/json-normalizer/)
 
